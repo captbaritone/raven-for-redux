@@ -1,7 +1,7 @@
 {
-  "name": "raven-redux-middleware",
-  "version": "1.0.0",
-  "description": "Middleware for propogating Redux state/actions to Sentry via Raven.",
+  "name": "raven-for-redux",
+  "version": "0.1.0",
+  "description": "Middleware for propagating Redux state/actions to Sentry via Raven.",
   "main": "index.js",
   "scripts": {
     "format": "prettier --write *.js",
@@ -9,27 +9,37 @@
     "test": "jest && npm run lint",
     "lint": "eslint ."
   },
+  "homepage": "https://github.com/captbaritone/raven-for-redux",
+  "bugs": {
+      "url": "https://github.com/captbaritone/raven-for-redux/issues",
+      "email" : "jordan@jordaneldredge.com"
+  },
+  "repository" :
+  { "type" : "git",
+    "url" : "git@github.com:captbaritone/raven-for-redux.git"
+  },
+  "peerDependencies": {
+      "redux": ">=3.1.0"
+  },
   "keywords": [
-    "middleware",
-    "raven",
-    "redux",
-    "error",
-    "logging",
-    "context"
+      "middleware",
+      "raven",
+      "redux",
+      "error",
+      "logging",
+      "context"
   ],
   "author": "Jordan Eldredge <jordan@jordaneldredge.com> (https://jordaneldredge.com)",
   "license": "MIT",
   "devDependencies": {
-    "babel-cli": "^6.22.2",
-    "babel-preset-es2015": "^6.22.0",
-    "eslint": "^3.14.1",
-    "eslint-config-prettier": "^1.0.2",
-    "jest": "^18.1.0",
-    "prettier": "^0.13.1",
-    "redux": "^3.6.0"
-  },
-  "dependencies": {
-    "babel-jest": "^18.0.0",
-    "jest-cli": "^18.1.0"
+      "babel-cli": "^6.22.2",
+      "babel-jest": "^18.0.0",
+      "babel-preset-es2015": "^6.22.0",
+      "eslint": "^3.14.1",
+      "eslint-config-prettier": "^1.0.2",
+      "jest": "^18.1.0",
+      "jest-cli": "^18.1.0",
+      "prettier": "^0.13.1",
+      "redux": "^3.6.0"
   }
 }
