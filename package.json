@@ -6,7 +6,8 @@
   "scripts": {
     "format": "prettier --write *.js",
     "tdd": "jest --watch",
-    "test": "jest"
+    "test": "jest && npm run lint",
+    "lint": "eslint ."
   },
   "keywords": [
     "middleware",
@@ -21,6 +22,8 @@
   "devDependencies": {
     "babel-cli": "^6.22.2",
     "babel-preset-es2015": "^6.22.0",
+    "eslint": "^3.14.1",
+    "eslint-config-prettier": "^1.0.2",
     "jest": "^18.1.0",
     "prettier": "^0.13.1",
     "redux": "^3.6.0"

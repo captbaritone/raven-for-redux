@@ -1,0 +1,14 @@
+{
+    "extends": [
+        "hss",
+        "hss/es6",
+        "prettier"
+    ],
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module"
+    },
+    "env": {
+        "jest": true
+    }
+}
