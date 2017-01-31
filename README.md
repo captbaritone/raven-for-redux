@@ -7,13 +7,18 @@ Inspired by
 [redux-raven-middleware](https://github.com/ngokevin/redux-raven-middleware)
 but with a slightly different approach.
 
+## Installation
+
+    npm install --save raven-for-redux
+
 ## Usage
 
 ```JavaScript
 // store.js
-import createRavenMiddleware from "raven-redux-middleware";
-import { createStore, applyMiddleware } from "redux";
 import Raven from "raven";
+import { createStore, applyMiddleware } from "redux";
+import createRavenMiddleware from "raven-for-redux";
+
 import { reducer } from "./my_reducer";
 
 Raven.config('<YOUR_DSN>').install();
