@@ -12,9 +12,7 @@ function createRavenMiddleware(Raven, options = {}) {
       // error report.
       Raven.captureBreadcrumb({
         category: "redux-action",
-        message: action.name,
-        // TODO: Docs say values in this object may only be strings. Is that true?
-        data: action
+        message: action.name
       });
 
       // Set the action as context in case we crash in the reducer.
