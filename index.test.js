@@ -1,5 +1,5 @@
-import createRavenMiddleware from "./index";
-import { createStore, applyMiddleware } from "redux";
+const createRavenMiddleware = require("./index");
+const { createStore, applyMiddleware } = require("redux");
 
 const action = { type: "INCREMENT" };
 

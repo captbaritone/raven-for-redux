@@ -31,4 +31,4 @@ function createRavenMiddleware(Raven, options = {}) {
   };
 }
 
-export default createRavenMiddleware;
+module.exports = createRavenMiddleware;

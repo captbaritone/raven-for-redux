@@ -6,9 +6,10 @@
     ],
     "parserOptions": {
         "ecmaVersion": 6,
-        "sourceType": "module"
+        "sourceType": "script"
     },
     "env": {
-        "jest": true
+        "jest": true,
+        "node": true
     }
 }
