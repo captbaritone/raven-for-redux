@@ -6,7 +6,7 @@
   "scripts": {
     "format": "prettier --write *.js",
     "tdd": "jest --watch",
-    "test": "jest && npm run lint",
+    "test": "jest --coverage && npm run lint",
     "lint": "eslint .",
     "build": "babel index.js --out-dir built/",
     "prepublish": "npm run build"
