@@ -41,6 +41,7 @@ This library makes, what I think are, a few improvements over
    already been initialized. For example, if you include Raven as its own
    `<script>` tag.
 2. Adds your state as context to _all_ errors, not just reducer exceptions.
+3. Does not swallow/hide errors thrown within the reducer.
 
 ## API: `createRavenMiddleware(Raven, [options])`
 
