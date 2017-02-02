@@ -3,13 +3,20 @@ const { createStore, applyMiddleware } = require("redux");
 
 const action = { type: "INCREMENT" };
 
-const getMockRaven = () => ({ context: jest.fn((options, func) => {
+const getMockRaven = () => {
+  const mockContext = jest.fn((options, func) => {
     try {
       func();
     } catch (e) {
       throw new Error("Caught error");
     }
-  }), captureBreadcrumb: jest.fn(), setExtraContext: jest.fn() });
+  });
+  return {
+    context: mockContext,
+    captureBreadcrumb: jest.fn(),
+    setExtraContext: jest.fn()
+  };
+};
 
 describe("Raven Redux Middleware (unit test)", () => {
   let Raven, mockStore, next, middleware, state;
