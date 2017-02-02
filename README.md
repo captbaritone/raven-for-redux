@@ -45,7 +45,10 @@ This library makes, what I think are, a few improvements over
 
 ## API: `createRavenMiddleware(Raven, [options])`
 
-Options:
+### Arguments
 
-* `actionTransformer`: Transform the last action before sending to Sentry.
-* `stateTransformer`: Transform the current state before sending to Sentry.
+* `Raven` _(Raven Object)_: A configured and "installed"
+  [Raven](https://docs.sentry.io/clients/javascript/) object.
+* ['options'] _(Object)_:
+  * [`actionTransformer`] _(Function)_: Transform the last action before sending to Sentry.
+  * [`stateTransformer`] _(Function)_: Transform the current state before sending to Sentry.
