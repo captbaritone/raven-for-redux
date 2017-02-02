@@ -1,6 +1,6 @@
 {
   "name": "raven-for-redux",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Middleware for propagating Redux state/actions to Sentry via Raven.",
   "main": "built/index.js",
   "scripts": {
