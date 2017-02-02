@@ -1,7 +1,7 @@
-const noop = x => x;
+const identity = x => x;
 function createRavenMiddleware(Raven, options = {}) {
-  const actionTransformer = options.actionTransformer || noop;
-  const stateTransformer = options.stateTransformer || noop;
+  const actionTransformer = options.actionTransformer || identity;
+  const stateTransformer = options.stateTransformer || identity;
   return store => {
     // Record the initial state in case we crash before the first action
     // succeeds.
