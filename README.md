@@ -1,3 +1,5 @@
+ [![Travis](https://img.shields.io/travis/captbaritone/raven-for-redux.svg)]() [![Codecov](https://img.shields.io/codecov/c/github/captbaritone/raven-for-redux.svg)]()
+
 # Raven Middleware for Redux
 
 Logs all dispatched actions to Raven as "breadcrumbs" and attaches your current
