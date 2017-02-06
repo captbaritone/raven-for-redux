@@ -34,7 +34,8 @@ describe("Raven Redux Middleware (unit test)", () => {
   it("adds action types to the breadcrumbs", () => {
     middleware(mockStore)(next)(action);
     expect(Raven.captureBreadcrumb).toHaveBeenCalledWith({
-      category: "redux-action"
+      category: "redux-action",
+      message: action.type
     });
   });
   it("sets the initial state as context when first booting up", () => {
@@ -76,7 +77,8 @@ describe("Raven Redux Middleware (integration tests)", () => {
     store.dispatch(action);
 
     expect(Raven.captureBreadcrumb).toHaveBeenCalledWith({
-      category: "redux-action"
+      category: "redux-action",
+      message: action.type
     });
   });
   it("sets new state and last action as extra context", () => {

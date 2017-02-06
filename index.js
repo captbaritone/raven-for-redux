@@ -12,7 +12,7 @@ function createRavenMiddleware(Raven, options = {}) {
       // error report.
       Raven.captureBreadcrumb({
         category: "redux-action",
-        message: action.name
+        message: action.type
       });
 
       // Set the action as context in case we crash in the reducer.
