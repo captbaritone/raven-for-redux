@@ -49,6 +49,18 @@ describe("Raven Redux Middleware (unit test)", () => {
       state: 1
     });
   });
+  it("can specify a custom breadcrumb category", () => {
+    const customCategoryName = "TEST";
+    const customMiddleware = createRavenMiddleware(Raven, {
+      breadcrumbCategory: customCategoryName
+    });
+
+    customMiddleware(mockStore)(next)(action);
+    expect(Raven.captureBreadcrumb).toHaveBeenCalledWith({
+      category: customCategoryName,
+      message: action.type
+    });
+  });
 });
 
 const reducer = (state = 0, action) => {

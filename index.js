@@ -1,7 +1,10 @@
 const identity = x => x;
 function createRavenMiddleware(Raven, options = {}) {
-  const actionTransformer = options.actionTransformer || identity;
-  const stateTransformer = options.stateTransformer || identity;
+  const {
+    actionTransformer = identity,
+    stateTransformer = identity,
+    breadcrumbCategory = "redux-action"
+  } = options;
   return store => {
     // Record the initial state in case we crash before the first action
     // succeeds.
@@ -11,7 +14,7 @@ function createRavenMiddleware(Raven, options = {}) {
       // Log the action taken to Raven so that we have narrative context in our
       // error report.
       Raven.captureBreadcrumb({
-        category: "redux-action",
+        category: breadcrumbCategory,
         message: action.type
       });
 

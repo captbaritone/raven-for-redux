@@ -5,9 +5,7 @@
 Logs all dispatched actions to Raven as "breadcrumbs" and attaches your current
 Redux store as additional context.
 
-Inspired by
-[redux-raven-middleware](https://github.com/ngokevin/redux-raven-middleware)
-but with a slightly different approach.
+Inspired by [redux-raven-middleware] but with a slightly different approach.
 
 ## Installation
 
@@ -23,7 +21,8 @@ import createRavenMiddleware from "raven-for-redux";
 
 import { reducer } from "./my_reducer";
 
-Raven.config('<YOUR_DSN>').install();
+// Or, you might already have Raven as `window.Raven`.
+Raven.config("<YOUR_DSN>").install();
 
 export default createStore(
     reducer,
@@ -50,7 +49,13 @@ This library makes, what I think are, a few improvements over
 ### Arguments
 
 * `Raven` _(Raven Object)_: A configured and "installed"
-  [Raven](https://docs.sentry.io/clients/javascript/) object.
+  [Raven] object.
 * [`options`] _(Object)_:
   * [`actionTransformer`] _(Function)_: Transform the last action before sending to Sentry.
   * [`stateTransformer`] _(Function)_: Transform the current state before sending to Sentry.
+  * [`breadcrumbCategory`] _(String)_ (default: "redux-action"): Category name
+      assigned to the [Raven Breadcrumbs] created for each action.
+
+[redux-raven-middleware]: https://github.com/ngokevin/redux-raven-middleware
+[Raven]: https://docs.sentry.io/clients/javascript/
+[Raven Breadcrumbs]: https://docs.sentry.io/clients/javascript/usage/#recording-breadcrumbs
