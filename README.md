@@ -27,6 +27,8 @@ Raven.config("<YOUR_DSN>").install();
 export default createStore(
     reducer,
     applyMiddleware(
+        // Middlewares, like redux-thunk` that intercept or emit actions should
+        // preceed raven-for-redux.
         createRavenMiddleware(Raven)
     )
 );
