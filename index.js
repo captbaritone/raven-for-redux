@@ -19,8 +19,8 @@ function createRavenMiddleware(Raven, options = {}) {
       });
 
       // Set the action as context in case we crash in the reducer.
-      Raven.context({ lastAction: actionTransformer(action) }, () =>
-        next(action));
+      const extra = { lastAction: actionTransformer(action) };
+      Raven.context({ extra }, () => next(action));
 
       // Set the last action and state as context in case we crash before
       // the next action is dispatched.

@@ -112,7 +112,9 @@ describe("Raven Redux Middleware (integration tests)", () => {
   it("logs action, even if we crash inside the reducer", () => {
     const throwAction = { type: "THROW" };
     expect(() => store.dispatch(throwAction)).toThrow("Caught error");
-    expect(Raven.context.mock.calls[0][0]).toEqual({ lastAction: throwAction });
+    expect(Raven.context.mock.calls[0][0]).toEqual({
+      extra: { lastAction: throwAction }
+    });
   });
   describe("actionTransformer", () => {
     let actionTransformer;
@@ -127,7 +129,7 @@ describe("Raven Redux Middleware (integration tests)", () => {
     it("transforms the nextAction passed to context wrapper", () => {
       store.dispatch(action);
       expect(Raven.context.mock.calls[0][0]).toEqual({
-        lastAction: actionTransformer(action)
+        extra: { lastAction: actionTransformer(action) }
       });
     });
     it("transforms the nextAction passed to setExtraContext", () => {
