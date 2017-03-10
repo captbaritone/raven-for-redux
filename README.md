@@ -15,7 +15,7 @@ Inspired by [redux-raven-middleware] but with a slightly different approach.
 
 ```JavaScript
 // store.js
-import Raven from "raven";
+import Raven from "raven-js";
 import { createStore, applyMiddleware } from "redux";
 import createRavenMiddleware from "raven-for-redux";
 
