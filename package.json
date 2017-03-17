@@ -9,7 +9,8 @@
     "test": "jest --coverage && npm run lint",
     "lint": "eslint .",
     "build": "babel index.js --out-dir built/",
-    "prepublish": "npm run build"
+    "prepublish": "npm run test && npm run build",
+    "serve-example": "webpack-dev-server --watch --config=example/webpack.config.js"
   },
   "homepage": "https://github.com/captbaritone/raven-for-redux",
   "bugs": {
@@ -43,6 +44,8 @@
     "jest": "^18.1.0",
     "jest-cli": "^18.1.0",
     "prettier": "^0.13.1",
-    "redux": "^3.6.0"
+    "raven-js": "^3.12.1",
+    "redux": "^3.6.0",
+    "webpack-dev-server": "^2.4.1"
   }
 }
