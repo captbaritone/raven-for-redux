@@ -28,13 +28,13 @@ const store = createStore(
   )
 );
 
-document.getElementById("crash").addEventListener("click", e => {
+document.getElementById("crash").addEventListener("click", () => {
   throw new Error("Whoops! My application crashed!");
 });
-document.getElementById("crash-in-reducer").addEventListener("click", e => {
+document.getElementById("crash-in-reducer").addEventListener("click", () => {
   store.dispatch({ type: "CRASH_IN_THE_REDUCER" });
 });
-document.getElementById("set-state").addEventListener("click", e => {
+document.getElementById("set-state").addEventListener("click", () => {
   store.dispatch({
     type: "UPDATE_MY_STRING",
     str: document.getElementById("state").value
