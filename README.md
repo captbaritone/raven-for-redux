@@ -59,7 +59,7 @@ This library makes, what I think are, a few improvements over
       exception. See the Sentry [Breadcrumb documentation].
   * [`actionTransformer`] _(Function)_: Transform the last action before sending to Sentry.
   * [`stateTransformer`] _(Function)_: Transform the current state before
-  * sending to Sentry.
+      sending to Sentry.
   * [`breadcrumbCategory`] _(String)_ (default: "redux-action"): Category name
       assigned to the [Raven Breadcrumbs] created for each action.
 
