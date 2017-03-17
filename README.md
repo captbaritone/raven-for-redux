@@ -52,11 +52,18 @@ This library makes, what I think are, a few improvements over
 * `Raven` _(Raven Object)_: A configured and "installed"
   [Raven] object.
 * [`options`] _(Object)_:
+  * [`breadcrumbDataFromAction`] _(Function)_ (default: `action => undefined`): Transform each
+      action into a breadcrumb `data` key/value object. __Note__: By default,
+      no data is passed, since the object must be "flat", and if your
+      additional context gets too large, Sentry will fail to record the
+      exception. See the Sentry [Breadcrumb documentation].
   * [`actionTransformer`] _(Function)_: Transform the last action before sending to Sentry.
-  * [`stateTransformer`] _(Function)_: Transform the current state before sending to Sentry.
+  * [`stateTransformer`] _(Function)_: Transform the current state before
+  * sending to Sentry.
   * [`breadcrumbCategory`] _(String)_ (default: "redux-action"): Category name
       assigned to the [Raven Breadcrumbs] created for each action.
 
 [redux-raven-middleware]: https://github.com/ngokevin/redux-raven-middleware
 [Raven]: https://docs.sentry.io/clients/javascript/
 [Raven Breadcrumbs]: https://docs.sentry.io/clients/javascript/usage/#recording-breadcrumbs
+[Breadcrumb documentation]: https://docs.sentry.io/learn/breadcrumbs/

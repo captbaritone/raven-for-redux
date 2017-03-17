@@ -1,6 +1,8 @@
 const identity = x => x;
+const getUndefined = () => {};
 function createRavenMiddleware(Raven, options = {}) {
   const {
+    breadcrumbDataFromAction = getUndefined,
     actionTransformer = identity,
     stateTransformer = identity,
     breadcrumbCategory = "redux-action"
@@ -15,7 +17,8 @@ function createRavenMiddleware(Raven, options = {}) {
       // error report.
       Raven.captureBreadcrumb({
         category: breadcrumbCategory,
-        message: action.type
+        message: action.type,
+        data: breadcrumbDataFromAction(action)
       });
 
       // Set the action as context in case we crash in the reducer.

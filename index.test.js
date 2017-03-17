@@ -38,6 +38,23 @@ describe("Raven Redux Middleware (unit test)", () => {
       message: action.type
     });
   });
+  it("can attach data to the breadcrumbs", () => {
+    middleware = createRavenMiddleware(Raven, {
+      breadcrumbDataFromAction: action => ({
+        actionTypeLowerCase: action.type.toLowerCase(),
+        anotherKey: "hello"
+      })
+    });
+    middleware(mockStore)(next)(action);
+    expect(Raven.captureBreadcrumb).toHaveBeenCalledWith({
+      category: "redux-action",
+      message: action.type,
+      data: {
+        actionTypeLowerCase: "increment",
+        anotherKey: "hello"
+      }
+    });
+  });
   it("sets the initial state as context when first booting up", () => {
     middleware(mockStore);
     expect(Raven.setExtraContext).toHaveBeenCalledWith({ state: 0 });
