@@ -1,5 +1,7 @@
  [![Travis](https://img.shields.io/travis/captbaritone/raven-for-redux.svg)]() [![Codecov](https://img.shields.io/codecov/c/github/captbaritone/raven-for-redux.svg)]()
 
+ _Note:_ Raven 3.14.0 has a bug (https://github.com/getsentry/raven-js/issues/925) which this library triggers.
+
 # Raven Middleware for Redux
 
 Logs all dispatched actions to Raven as "breadcrumbs" and attaches your current
