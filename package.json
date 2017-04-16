@@ -43,7 +43,7 @@
     "eslint-config-prettier": "^1.0.2",
     "jest": "^18.1.0",
     "jest-cli": "^18.1.0",
-    "prettier": "^0.13.1",
+    "prettier": "^1.1.0",
     "raven-js": "^3.12.1",
     "redux": "^3.6.0",
     "webpack-dev-server": "^2.4.1"
