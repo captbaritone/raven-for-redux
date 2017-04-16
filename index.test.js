@@ -1,180 +1,161 @@
+const Raven = require("raven-js");
 const createRavenMiddleware = require("./index");
 const { createStore, applyMiddleware } = require("redux");
 
-const action = { type: "INCREMENT" };
-
-const getMockRaven = () => {
-  const mockContext = jest.fn((options, func) => {
-    try {
-      func();
-    } catch (e) {
-      throw new Error("Caught error");
-    }
-  });
-  return {
-    context: mockContext,
-    captureBreadcrumb: jest.fn(),
-    setExtraContext: jest.fn()
-  };
-};
-
-describe("Raven Redux Middleware (unit test)", () => {
-  let Raven, mockStore, next, middleware, state;
-  beforeEach(() => {
-    state = 0;
-    Raven = getMockRaven();
-    mockStore = { getState: jest.fn(() => state++) };
-    next = jest.fn();
-    middleware = createRavenMiddleware(Raven);
-  });
-  it("calls next()", () => {
-    middleware(mockStore)(next)(action);
-    expect(next).toHaveBeenCalledWith(action);
-  });
-  it("adds action types to the breadcrumbs", () => {
-    middleware(mockStore)(next)(action);
-    expect(Raven.captureBreadcrumb).toHaveBeenCalledWith({
-      category: "redux-action",
-      message: action.type
-    });
-  });
-  it("can attach data to the breadcrumbs", () => {
-    middleware = createRavenMiddleware(Raven, {
-      breadcrumbDataFromAction: action => ({
-        actionTypeLowerCase: action.type.toLowerCase(),
-        anotherKey: "hello"
-      })
-    });
-    middleware(mockStore)(next)(action);
-    expect(Raven.captureBreadcrumb).toHaveBeenCalledWith({
-      category: "redux-action",
-      message: action.type,
-      data: {
-        actionTypeLowerCase: "increment",
-        anotherKey: "hello"
-      }
-    });
-  });
-  it("sets the initial state as context when first booting up", () => {
-    middleware(mockStore);
-    expect(Raven.setExtraContext).toHaveBeenCalledWith({ state: 0 });
-  });
-  it("sets the new state and last action as context", () => {
-    middleware(mockStore)(next)(action);
-    expect(Raven.setExtraContext).toHaveBeenCalledWith({
-      lastAction: action,
-      state: 1
-    });
-  });
-  it("can specify a custom breadcrumb category", () => {
-    const customCategoryName = "TEST";
-    const customMiddleware = createRavenMiddleware(Raven, {
-      breadcrumbCategory: customCategoryName
-    });
-
-    customMiddleware(mockStore)(next)(action);
-    expect(Raven.captureBreadcrumb).toHaveBeenCalledWith({
-      category: customCategoryName,
-      message: action.type
-    });
-  });
+Raven.config("https://5d5bf17b1bed4afc9103b5a09634775e@sentry.io/146969", {
+  allowDuplicates: true
 });
 
-const reducer = (state = 0, action) => {
+const reducer = (previousState = 0, action) => {
   switch (action.type) {
-    case "INCREMENT":
-      return state + 1;
     case "THROW":
-      throw new Error("Your reducer errored");
+      throw new Error("Reducer error");
+    case "INCREMENT":
+      return previousState + 1;
+    case "DOUBLE":
+      return (previousState = previousState * 2);
   }
-  return state;
 };
 
-describe("Raven Redux Middleware (integration tests)", () => {
-  let Raven, store;
-  beforeEach(() => {
-    Raven = getMockRaven();
-    store = createStore(reducer, applyMiddleware(createRavenMiddleware(Raven)));
-  });
-  it("store starts out in default state", () => {
-    expect(store.getState()).toBe(0);
-  });
-  it("logs initial state to Raven", () => {
-    expect(Raven.setExtraContext).toHaveBeenCalledWith({ state: 0 });
-  });
-  it("captures breadcrumbs", () => {
-    store.dispatch(action);
+describe("raven-for-redux", function() {
+  beforeEach(function() {
+    this.mockTransport = jest.fn();
+    Raven.setTransport(this.mockTransport);
+    Raven.setDataCallback(undefined);
+    Raven.setBreadcrumbCallback(undefined);
 
-    expect(Raven.captureBreadcrumb).toHaveBeenCalledWith({
-      category: "redux-action",
-      message: action.type
-    });
+    Raven._breadcrumbs = [];
+    Raven._globalContext = {};
   });
-  it("sets new state and last action as extra context", () => {
-    store.dispatch(action);
-
-    expect(Raven.setExtraContext).toHaveBeenCalledWith({
-      lastAction: action,
-      state: 1
-    });
-  });
-  it("sets new state and last action as extra context", () => {
-    store.dispatch(action);
-
-    expect(Raven.setExtraContext).toHaveBeenCalledWith({
-      lastAction: action,
-      state: 1
-    });
-  });
-  it("logs action, even if we crash inside the reducer", () => {
-    const throwAction = { type: "THROW" };
-    expect(() => store.dispatch(throwAction)).toThrow("Caught error");
-    expect(Raven.context.mock.calls[0][0]).toEqual({
-      extra: { lastAction: throwAction }
-    });
-  });
-  describe("actionTransformer", () => {
-    let actionTransformer;
-    beforeEach(() => {
-      actionTransformer = action => action.type.toLowerCase();
-      const options = { actionTransformer };
-      store = createStore(
+  describe("in the default configuration", function() {
+    beforeEach(function() {
+      this.store = createStore(
         reducer,
-        applyMiddleware(createRavenMiddleware(Raven, options))
+        applyMiddleware(createRavenMiddleware(Raven))
       );
     });
-    it("transforms the nextAction passed to context wrapper", () => {
-      store.dispatch(action);
-      expect(Raven.context.mock.calls[0][0]).toEqual({
-        extra: { lastAction: actionTransformer(action) }
+    // TODO: This is currently broken.
+    xit(
+      "includes the initial state when crashing/messaging before any action has been dispatched",
+      function() {
+        Raven.captureMessage("report!");
+
+        expect(this.mockTransport).toHaveBeenCalledTimes(1);
+        const { extra } = this.mockTransport.mock.calls[0][0].data;
+        expect(extra.lastAction).toBe(undefined);
+        expect(extra.state).toEqual(0);
+      }
+    );
+    it("logs the last action that was dispatched", function() {
+      this.store.dispatch({ type: "INCREMENT" });
+      expect(() => {
+        this.store.dispatch({ type: "THROW" });
+      }).toThrow();
+
+      expect(this.mockTransport).toHaveBeenCalledTimes(1);
+      const { extra } = this.mockTransport.mock.calls[0][0].data;
+      expect(extra.lastAction).toEqual({ type: "THROW" });
+    });
+    it("logs the last state when crashing in the reducer", function() {
+      this.store.dispatch({ type: "INCREMENT" });
+      expect(() => {
+        this.store.dispatch({ type: "THROW" });
+      }).toThrow();
+
+      expect(this.mockTransport).toHaveBeenCalledTimes(1);
+      const { extra } = this.mockTransport.mock.calls[0][0].data;
+      expect(extra.state).toBe(1);
+    });
+    it("logs a breadcrumb for each action", function() {
+      this.store.dispatch({ type: "INCREMENT", extra: "FOO" });
+      expect(() => {
+        this.store.dispatch({ type: "THROW", extra: "BAR" });
+      }).toThrow();
+
+      expect(this.mockTransport).toHaveBeenCalledTimes(1);
+      const { breadcrumbs } = this.mockTransport.mock.calls[0][0].data;
+      expect(breadcrumbs.values.length).toBe(2);
+      expect(breadcrumbs.values[0]).toMatchObject({
+        category: "redux-action",
+        data: undefined,
+        message: "INCREMENT"
+      });
+      expect(breadcrumbs.values[1]).toMatchObject({
+        category: "redux-action",
+        data: undefined,
+        message: "THROW"
       });
     });
-    it("transforms the nextAction passed to setExtraContext", () => {
-      store.dispatch(action);
-      expect(Raven.setExtraContext).toHaveBeenCalledWith({
-        lastAction: actionTransformer(action),
-        state: 1
-      });
+    it("includes the last state/action when crashing/reporting outside the reducer", function() {
+      this.store.dispatch({ type: "INCREMENT" });
+      this.store.dispatch({ type: "INCREMENT" });
+      this.store.dispatch({ type: "DOUBLE" });
+      Raven.captureMessage("report!");
+
+      expect(this.mockTransport).toHaveBeenCalledTimes(1);
+      const { extra } = this.mockTransport.mock.calls[0][0].data;
+      expect(extra.lastAction).toEqual({ type: "DOUBLE" });
+      expect(extra.state).toEqual(4);
     });
   });
-  describe("stateTransformer", () => {
-    beforeEach(() => {
-      const stateTransformer = state => state + 100;
-      const options = { stateTransformer };
-      store = createStore(
+  describe("with all the options enabled", function() {
+    beforeEach(function() {
+      this.stateTransformer = jest.fn(state => `transformed state ${state}`);
+      this.actionTransformer = jest.fn(
+        action => `transformed action ${action.type}`
+      );
+      this.breadcrumbDataFromAction = jest.fn(action => ({
+        extra: action.extra
+      }));
+
+      this.store = createStore(
         reducer,
-        applyMiddleware(createRavenMiddleware(Raven, options))
+        applyMiddleware(
+          createRavenMiddleware(Raven, {
+            stateTransformer: this.stateTransformer,
+            actionTransformer: this.actionTransformer,
+            breadcrumbDataFromAction: this.breadcrumbDataFromAction
+          })
+        )
       );
     });
-    it("transforms the initial state", () => {
-      expect(Raven.setExtraContext).toHaveBeenCalledWith({ state: 100 });
+    // TODO: Issue #6
+    xit("does not transform the state or action until an exception is encountered", function() {
+      this.store.dispatch({ type: "INCREMENT" });
+      expect(this.stateTransformer).not.toHaveBeenCalled();
+      expect(this.actionTransformer).not.toHaveBeenCalled();
     });
-    it("transforms each new state", () => {
-      store.dispatch(action);
-      expect(Raven.setExtraContext).toHaveBeenCalledWith({
-        lastAction: action,
-        state: 101
-      });
+    it("transforms the action if an error is encountered", function() {
+      this.store.dispatch({ type: "INCREMENT" });
+      expect(() => {
+        this.store.dispatch({ type: "THROW" });
+      }).toThrow();
+
+      expect(this.mockTransport).toHaveBeenCalledTimes(1);
+      const { extra } = this.mockTransport.mock.calls[0][0].data;
+      expect(extra.lastAction).toEqual("transformed action THROW");
+    });
+    it("transforms the state if an error is encountered", function() {
+      this.store.dispatch({ type: "INCREMENT" });
+      expect(() => {
+        this.store.dispatch({ type: "THROW" });
+      }).toThrow();
+
+      expect(this.mockTransport).toHaveBeenCalledTimes(1);
+      const { extra } = this.mockTransport.mock.calls[0][0].data;
+      expect(extra.state).toEqual("transformed state 1");
+    });
+    it("derives breadcrumb data from action", function() {
+      this.store.dispatch({ type: "INCREMENT", extra: "FOO" });
+      expect(() => {
+        this.store.dispatch({ type: "THROW", extra: "BAR" });
+      }).toThrow();
+
+      expect(this.mockTransport).toHaveBeenCalledTimes(1);
+      const { breadcrumbs } = this.mockTransport.mock.calls[0][0].data;
+      expect(breadcrumbs.values.length).toBe(2);
+      expect(breadcrumbs.values[0].data).toMatchObject({ extra: "FOO" });
+      expect(breadcrumbs.values[1].data).toMatchObject({ extra: "BAR" });
     });
   });
 });
