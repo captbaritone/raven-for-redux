@@ -119,8 +119,7 @@ describe("raven-for-redux", function() {
         )
       );
     });
-    // TODO: Issue #6
-    xit("does not transform the state or action until an exception is encountered", function() {
+    it("does not transform the state or action until an exception is encountered", function() {
       this.store.dispatch({ type: "INCREMENT" });
       expect(this.stateTransformer).not.toHaveBeenCalled();
       expect(this.actionTransformer).not.toHaveBeenCalled();
