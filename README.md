@@ -1,11 +1,12 @@
  [![Travis](https://img.shields.io/travis/captbaritone/raven-for-redux.svg)]() [![Codecov](https://img.shields.io/codecov/c/github/captbaritone/raven-for-redux.svg)]()
 
- _Note:_ Raven 3.14.0 has a bug (https://github.com/getsentry/raven-js/issues/925) which this library triggers.
+ _Note:_ Raven 3.14.0 has a bug (https://github.com/getsentry/raven-js/issues/925)
+ which this library triggers.
 
 # Raven Middleware for Redux
 
-Logs all dispatched actions to Raven as "breadcrumbs" and attaches your current
-Redux store as additional context.
+Logs the type of each dispatched action to Raven as "breadcrumbs" and attaches
+your last action and current Redux state as additional context.
 
 Inspired by [redux-raven-middleware] but with a slightly different approach.
 
@@ -53,19 +54,69 @@ This library makes, what I think are, a few improvements over
 
 * `Raven` _(Raven Object)_: A configured and "installed"
   [Raven] object.
-* [`options`] _(Object)_:
-  * [`breadcrumbDataFromAction`] _(Function)_ (default: `action => undefined`): Transform each
-      action into a breadcrumb `data` key/value object. __Note__: By default,
-      no data is passed, since the object must be "flat", and if your
-      additional context gets too large, Sentry will fail to record the
-      exception. See the Sentry [Breadcrumb documentation].
-  * [`actionTransformer`] _(Function)_: Transform the last action before sending to Sentry.
-  * [`stateTransformer`] _(Function)_: Transform the current state before
-      sending to Sentry.
-  * [`breadcrumbCategory`] _(String)_ (default: "redux-action"): Category name
-      assigned to the [Raven Breadcrumbs] created for each action.
+* [`options`] _(Object)_: See below for detailed documentation.
+
+### Options
+
+While the default configuration should work for most use cases, Raven for Redux
+can be configured by providing an options object with any of the following
+optional keys.
+
+#### `breadcrumbDataFromAction` _(Function)_
+
+Default: `action => undefined`
+
+Raven allows you to attach additional context information to each breadcrumb in
+the form of a `data` object. `breadcrubmDataFromAction` allows you to specify
+a transform function which is passed the `action` object and returns a `data`
+object.
+
+The default implementation of this function returns `undefined`, which means no
+data is attached.  This is because there are __a few gotchas__:
+
+* The data object must be "flat". In other words, each value of the object must be a string. The values may not be arrays or other objects.
+* Sentry limits the total size of your error report. If you send too much data,
+  the error will not be recorded. If you are going to attach data to your
+  breadcrumbs, be sure you understand the way it will affect the total size
+  of your report.
+
+See the Sentry [Breadcrumb documentation].
+
+#### `actionTransformer` _(Function)_
+
+Default: `action => action`
+
+In some cases your actions may be extremely large, or contain sensitive data.
+In those cases, you may want to transform your action before sending it to
+Sentry. This function allows you to do so. It is passed the last dispatched
+`action` object, and should return a serializable value.
+
+If you have specified a [`dataCallback`] when you configured Raven, note that
+`actionTransformer` will be applied _before_ your specified `dataCallback`.
+
+#### `stateTransformer`
+
+Default: `state => state` _(Function)_
+
+In some cases your state may be extremely large, or contain sensitive data.
+In those cases, you may want to transform your state before sending it to
+Sentry. This function allows you to do so. It is passed the current state
+object, and should return a serializable value.
+
+If you have specified a [`dataCallback`] when you configured Raven, note that
+`stateTransformer` will be applied _before_ your specified `dataCallback`.
+
+#### `breadcrumbCategory` _(String)_
+
+Default: `"redux-action"`
+
+Each breadcrumb is assigned a category. By default all action breadcrumbs are
+given the category `"redux-action"`. If you would prefer a different category
+name, specify it here.
+
 
 [redux-raven-middleware]: https://github.com/ngokevin/redux-raven-middleware
 [Raven]: https://docs.sentry.io/clients/javascript/
 [Raven Breadcrumbs]: https://docs.sentry.io/clients/javascript/usage/#recording-breadcrumbs
 [Breadcrumb documentation]: https://docs.sentry.io/learn/breadcrumbs/
+[`dataCallback`]: https://docs.sentry.io/clients/javascript/config/
