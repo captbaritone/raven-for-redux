@@ -120,6 +120,12 @@ Each breadcrumb is assigned a category. By default all action breadcrumbs are
 given the category `"redux-action"`. If you would prefer a different category
 name, specify it here.
 
+## Changelog
+
+### 0.6.0
+
+* `actionTransformeri` and `stateTransformer` are only run when reporting an error, rather than on every action. (#8)
+
 
 [redux-raven-middleware]: https://github.com/ngokevin/redux-raven-middleware
 [Raven]: https://docs.sentry.io/clients/javascript/
