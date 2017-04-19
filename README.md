@@ -80,6 +80,8 @@ data is attached.  This is because there are __a few gotchas__:
   breadcrumbs, be sure you understand the way it will affect the total size
   of your report.
 
+Be careful not to mutate your `action` within this function.
+
 See the Sentry [Breadcrumb documentation].
 
 #### `actionTransformer` _(Function)_
@@ -90,6 +92,8 @@ In some cases your actions may be extremely large, or contain sensitive data.
 In those cases, you may want to transform your action before sending it to
 Sentry. This function allows you to do so. It is passed the last dispatched
 `action` object, and should return a serializable value.
+
+Be careful not to mutate your `action` within this function.
 
 If you have specified a [`dataCallback`] when you configured Raven, note that
 `actionTransformer` will be applied _before_ your specified `dataCallback`.
@@ -102,6 +106,8 @@ In some cases your state may be extremely large, or contain sensitive data.
 In those cases, you may want to transform your state before sending it to
 Sentry. This function allows you to do so. It is passed the current state
 object, and should return a serializable value.
+
+Be careful not to mutate your `state` within this function.
 
 If you have specified a [`dataCallback`] when you configured Raven, note that
 `stateTransformer` will be applied _before_ your specified `dataCallback`.
