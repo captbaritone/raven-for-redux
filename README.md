@@ -124,7 +124,7 @@ name, specify it here.
 
 ### 0.7.0
 
-* Return the previous middleware's (or the actual `dispatch` function's) return value. ([#11])
+* Return the next middleware's (or the actual `dispatch` function's) return value. ([#11])
 
 ### 0.6.0
 
