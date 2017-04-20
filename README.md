@@ -124,11 +124,11 @@ name, specify it here.
 
 ### 0.7.0
 
-* Return the previous middleware's (or the actual `dispatch` function's) return value. (#11)
+* Return the previous middleware's (or the actual `dispatch` function's) return value. ([#11])
 
 ### 0.6.0
 
-* `actionTransformeri` and `stateTransformer` are only run when reporting an error, rather than on every action. (#8)
+* `actionTransformeri` and `stateTransformer` are only run when reporting an error, rather than on every action. ([#8])
 
 
 [redux-raven-middleware]: https://github.com/ngokevin/redux-raven-middleware
@@ -136,3 +136,5 @@ name, specify it here.
 [Raven Breadcrumbs]: https://docs.sentry.io/clients/javascript/usage/#recording-breadcrumbs
 [Breadcrumb documentation]: https://docs.sentry.io/learn/breadcrumbs/
 [`dataCallback`]: https://docs.sentry.io/clients/javascript/config/
+[#11]: https://github.com/captbaritone/raven-for-redux/pull/11
+[#8]: https://github.com/captbaritone/raven-for-redux/pull/8
