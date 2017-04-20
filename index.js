@@ -30,7 +30,7 @@ function createRavenMiddleware(Raven, options = {}) {
 
       // Set the action as context in case we crash in the reducer.
       const extra = { lastAction: action };
-      Raven.context({ extra }, () => next(action));
+      const returnValue = Raven.context({ extra }, () => next(action));
 
       // Set the last action and state as context in case we crash before
       // the next action is dispatched.
@@ -38,6 +38,7 @@ function createRavenMiddleware(Raven, options = {}) {
         lastAction: action,
         state: store.getState()
       });
+      return returnValue;
     };
   };
 }

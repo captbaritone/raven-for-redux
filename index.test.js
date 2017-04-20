@@ -46,6 +46,11 @@ describe("raven-for-redux", function() {
         expect(extra.state).toEqual(0);
       }
     );
+    it("returns the result of the next dispatch function", function() {
+      expect(this.store.dispatch({ type: "INCREMENT" })).toEqual({
+        type: "INCREMENT"
+      });
+    });
     it("logs the last action that was dispatched", function() {
       this.store.dispatch({ type: "INCREMENT" });
       expect(() => {
