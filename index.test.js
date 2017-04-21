@@ -4,12 +4,16 @@ const { createStore, applyMiddleware } = require("redux");
 
 Raven.config("https://5d5bf17b1bed4afc9103b5a09634775e@sentry.io/146969", {
   allowDuplicates: true
-});
+}).install();
 
 const reducer = (previousState = 0, action) => {
   switch (action.type) {
     case "THROW":
-      throw new Error("Reducer error");
+      // Raven does not seem to be able to capture global exceptions in Jest tests.
+      // So we explicitly wrap this error in a Raven context.
+      Raven.context(() => {
+        throw new Error("Reducer error");
+      });
     case "INCREMENT":
       return previousState + 1;
     case "DOUBLE":
