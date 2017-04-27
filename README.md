@@ -122,6 +122,10 @@ name, specify it here.
 
 ## Changelog
 
+### 0.7.1
+
+* Refactor: Use implicit binding to track the state/last action. ([1def9a7])
+
 ### 0.7.0
 
 * Return the next middleware's (or the actual `dispatch` function's) return value. ([#11])
@@ -138,3 +142,4 @@ name, specify it here.
 [`dataCallback`]: https://docs.sentry.io/clients/javascript/config/
 [#11]: https://github.com/captbaritone/raven-for-redux/pull/11
 [#8]: https://github.com/captbaritone/raven-for-redux/pull/8
+[1def9a7]: https://github.com/captbaritone/raven-for-redux/commit/1def9a747d7b711ad93da531b8ff9d128c352b45
