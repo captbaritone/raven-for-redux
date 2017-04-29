@@ -48,5 +48,15 @@
     "raven-js": "^3.12.1",
     "redux": "^3.6.0",
     "webpack-dev-server": "^2.4.1"
+  },
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "branches": 50,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
+    }
   }
 }
