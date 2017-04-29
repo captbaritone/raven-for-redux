@@ -18,6 +18,8 @@ const reducer = (previousState = 0, action) => {
       return previousState + 1;
     case "DOUBLE":
       return (previousState = previousState * 2);
+    default:
+      return previousState;
   }
 };
 
@@ -38,18 +40,14 @@ describe("raven-for-redux", function() {
         applyMiddleware(createRavenMiddleware(Raven))
       );
     });
-    // TODO: This is currently broken.
-    xit(
-      "includes the initial state when crashing/messaging before any action has been dispatched",
-      function() {
-        Raven.captureMessage("report!");
+    it("includes the initial state when crashing/messaging before any action has been dispatched", function() {
+      Raven.captureMessage("report!");
 
-        expect(this.mockTransport).toHaveBeenCalledTimes(1);
-        const { extra } = this.mockTransport.mock.calls[0][0].data;
-        expect(extra.lastAction).toBe(undefined);
-        expect(extra.state).toEqual(0);
-      }
-    );
+      expect(this.mockTransport).toHaveBeenCalledTimes(1);
+      const { extra } = this.mockTransport.mock.calls[0][0].data;
+      expect(extra.lastAction).toBe(undefined);
+      expect(extra.state).toEqual(0);
+    });
     it("returns the result of the next dispatch function", function() {
       expect(this.store.dispatch({ type: "INCREMENT" })).toEqual({
         type: "INCREMENT"
