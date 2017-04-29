@@ -50,7 +50,8 @@ This library makes, what I think are, a few improvements over
    for more advanced configuration of Raven, as well as cases where Raven has
    already been initialized. For example, if you include Raven as its own
    `<script>` tag.
-2. Adds your state as context to _all_ errors, not just reducer exceptions.
+2. Adds your state and last action as context to _all_ errors, not just reducer
+   exceptions.
 
 ## API: `createRavenMiddleware(Raven, [options])`
 
