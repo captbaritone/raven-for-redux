@@ -4,7 +4,7 @@
   "description": "Middleware for propagating Redux state/actions to Sentry via Raven.",
   "main": "built/index.js",
   "scripts": {
-    "format": "prettier --write *.js",
+    "fix": "eslint --fix .",
     "tdd": "jest --watch",
     "test": "jest --coverage && npm run lint",
     "lint": "eslint .",
@@ -41,6 +41,7 @@
     "eslint": "^3.14.1",
     "eslint-config-hss": "^5.1.0",
     "eslint-config-prettier": "^1.0.2",
+    "eslint-plugin-prettier": "^2.0.1",
     "jest": "^18.1.0",
     "jest-cli": "^18.1.0",
     "prettier": "^1.1.0",

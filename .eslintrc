@@ -4,6 +4,12 @@
         "hss/es6",
         "prettier"
     ],
+    "plugins": [
+        "prettier"
+    ],
+    "rules": {
+        "prettier/prettier": "error"
+    },
     "parserOptions": {
         "ecmaVersion": 6,
         "sourceType": "script"
