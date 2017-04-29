@@ -122,6 +122,10 @@ name, specify it here.
 
 ## Changelog
 
+### 1.0.0
+
+* No changes. Just bringing the project out of beta.
+
 ### 0.7.1
 
 * Refactor: Use implicit binding to track the state/last action. ([1def9a7])
