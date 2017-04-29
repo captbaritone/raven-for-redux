@@ -18,24 +18,28 @@ Inspired by [redux-raven-middleware] but with a slightly different approach.
 
 ```JavaScript
 // store.js
-import Raven from "raven-js";
+
+import Raven from "raven-js"; // Or, you might already have this as `window.Raven`.
 import { createStore, applyMiddleware } from "redux";
 import createRavenMiddleware from "raven-for-redux";
 
 import { reducer } from "./my_reducer";
 
-// Or, you might already have Raven as `window.Raven`.
 Raven.config("<YOUR_DSN>").install();
 
 export default createStore(
     reducer,
     applyMiddleware(
-        // Middlewares, like redux-thunk` that intercept or emit actions should
-        // preceed raven-for-redux.
-        createRavenMiddleware(Raven)
+        // Middlewares, like `redux-thunk` that intercept or emit actions should
+        // precede `raven-for-redux`.
+        createRavenMiddleware(Raven, {
+            // Optionally pass some options here.
+        })
     )
 );
 ```
+
+For a working example, see the [example](./example/) directory.
 
 ## Improvements
 
