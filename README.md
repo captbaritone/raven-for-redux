@@ -5,8 +5,6 @@
 
 # Raven Middleware for Redux
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/captbaritone/raven-for-redux.svg)](https://greenkeeper.io/)
-
 Logs the type of each dispatched action to Raven as "breadcrumbs" and attaches
 your last action and current Redux state as additional context.
 
