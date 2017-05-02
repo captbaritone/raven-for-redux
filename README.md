@@ -141,7 +141,7 @@ name, specify it here.
 
 ### 0.6.0
 
-* `actionTransformeri` and `stateTransformer` are only run when reporting an error, rather than on every action. ([#8])
+* `actionTransformer` and `stateTransformer` are only run when reporting an error, rather than on every action. ([#8])
 
 
 [redux-raven-middleware]: https://github.com/ngokevin/redux-raven-middleware
