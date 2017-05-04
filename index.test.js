@@ -29,6 +29,7 @@ describe("raven-for-redux", function() {
     Raven.setTransport(this.mockTransport);
     Raven.setDataCallback(undefined);
     Raven.setBreadcrumbCallback(undefined);
+    Raven.setUserContext(undefined);
 
     Raven._breadcrumbs = [];
     Raven._globalContext = {};
@@ -162,6 +163,15 @@ describe("raven-for-redux", function() {
       expect(breadcrumbs.values.length).toBe(2);
       expect(breadcrumbs.values[0].data).toMatchObject({ extra: "FOO" });
       expect(breadcrumbs.values[1].data).toMatchObject({ extra: "BAR" });
+    });
+    it("preserves user context", function() {
+      const userData = { userId: 1, username: "captbaritone" };
+      Raven.setUserContext(userData);
+      expect(() => {
+        this.store.dispatch({ type: "THROW", extra: "BAR" });
+      }).toThrow();
+
+      expect(this.mockTransport.mock.calls[0][0].data.user).toEqual(userData);
     });
   });
 });
