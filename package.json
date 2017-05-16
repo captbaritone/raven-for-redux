@@ -43,7 +43,6 @@
     "eslint-config-prettier": "^2.0.0",
     "eslint-plugin-prettier": "^2.0.1",
     "jest": "^19.0.2",
-    "jest-cli": "^20.0.0",
     "prettier": "^1.1.0",
     "raven-js": "^3.12.1",
     "redux": "^3.6.0",
@@ -58,5 +57,8 @@
         "statements": 100
       }
     }
+  },
+  "dependencies": {
+    "jest": "^20.0.1"
   }
 }
