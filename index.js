@@ -14,7 +14,6 @@ function createRavenMiddleware(Raven, options = {}) {
 
     Raven.setDataCallback((data, original) => {
       data.extra.lastAction = actionTransformer(lastAction);
-      data.extra.state = stateTransformer(store.getState());
       return original ? original(data) : data;
     });
 
