@@ -1,4 +1,6 @@
 import Raven from "raven-js";
+import React from "react";
+import { render } from "react-dom";
 import { createStore, applyMiddleware } from "redux";
 import createRavenMiddleware from "../"; // "raven-for-redux"
 
@@ -40,6 +42,18 @@ document.getElementById("set-state").addEventListener("click", () => {
     str: document.getElementById("state").value
   });
 });
+
+const Button = () => (
+  <button
+    onClick={() => {
+      store.dispatch({ type: "CRASH_IN_THE_REDUCER" });
+    }}
+  >
+    Click to crash
+  </button>
+);
+
+render(<Button />, document.getElementById("react-app"));
 
 /*
 // This should leave a breadcrumb, and leave lastAction and state as context.
