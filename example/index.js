@@ -43,15 +43,14 @@ document.getElementById("set-state").addEventListener("click", () => {
   });
 });
 
-const Button = () => (
+const Button = () =>
   <button
     onClick={() => {
       store.dispatch({ type: "CRASH_IN_THE_REDUCER" });
     }}
   >
     Click to crash
-  </button>
-);
+  </button>;
 
 render(<Button />, document.getElementById("react-app"));
 
