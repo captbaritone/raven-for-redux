@@ -71,13 +71,16 @@ optional keys.
 
 Default: `action => undefined`
 
-Raven allows you to attach additional context information to each breadcrumb in
-the form of a `data` object. `breadcrubmDataFromAction` allows you to specify
+Raven allows you to attach additional context information to each breadcrumb
+in the form of a `data` object. `breadcrubmDataFromAction` allows you to specify
 a transform function which is passed the `action` object and returns a `data`
-object.
+object. Which will be logged to Sentry along with the breadcrumb.
 
-The default implementation of this function returns `undefined`, which means no
-data is attached.  This is because there are __a few gotchas__:
+_Ideally_ we could log the entire content of each action. If we could, we
+could perfectly replay the user's entire session to see what went wrong.
+
+However, the default implementation of this function returns `undefined`, which means
+no data is attached. This is because there are __a few gotchas__:
 
 * The data object must be "flat". In other words, each value of the object must be a string. The values may not be arrays or other objects.
 * Sentry limits the total size of your error report. If you send too much data,
@@ -85,7 +88,7 @@ data is attached.  This is because there are __a few gotchas__:
   breadcrumbs, be sure you understand the way it will affect the total size
   of your report.
 
-Be careful not to mutate your `action` within this function.
+Finally, be careful not to mutate your `action` within this function.
 
 See the Sentry [Breadcrumb documentation].
 
