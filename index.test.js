@@ -181,20 +181,22 @@ describe("raven-for-redux", function() {
     });
   });
 
-  describe("with ignoreActions option enabled", function() {
+  describe("with filterBreadcrumbActions option enabled", function() {
     beforeEach(function() {
-      context.ignoreActions = ["UNINTERESTING_ACTION"];
+      context.filterBreadcrumbActions = action => {
+        return action.type === "INCREMENT";
+      };
 
       context.store = createStore(
         reducer,
         applyMiddleware(
           createRavenMiddleware(Raven, {
-            ignoreActions: context.ignoreActions
+            filterBreadcrumbActions: context.filterBreadcrumbActions
           })
         )
       );
     });
-    it("ignores actions specified in config", function() {
+    it("filters actions for breadcrumbs", function() {
       context.store.dispatch({ type: "INCREMENT" });
       context.store.dispatch({ type: "UNINTERESTING_ACTION" });
       context.store.dispatch({ type: "INCREMENT" });
@@ -206,7 +208,8 @@ describe("raven-for-redux", function() {
         extra,
         breadcrumbs
       } = context.mockTransport.mock.calls[0][0].data;
-      expect(extra.lastAction).toEqual({ type: "INCREMENT" });
+      // Even though the action isn't added to breadcrumbs, it should be sent with extra data
+      expect(extra.lastAction).toEqual({ type: "UNINTERESTING_ACTION" });
       expect(breadcrumbs.values.length).toBe(2);
     });
   });

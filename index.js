@@ -1,5 +1,6 @@
 const identity = x => x;
 const getUndefined = () => {};
+const filter = () => true;
 function createRavenMiddleware(Raven, options = {}) {
   // TODO: Validate options.
   const {
@@ -7,7 +8,7 @@ function createRavenMiddleware(Raven, options = {}) {
     actionTransformer = identity,
     stateTransformer = identity,
     breadcrumbCategory = "redux-action",
-    ignoreActions = []
+    filterBreadcrumbActions = filter
   } = options;
 
   return store => {
@@ -22,13 +23,13 @@ function createRavenMiddleware(Raven, options = {}) {
     return next => action => {
       // Log the action taken to Raven so that we have narrative context in our
       // error report.
-      if (ignoreActions.indexOf(action.type) > -1) return next(action);
-
-      Raven.captureBreadcrumb({
-        category: breadcrumbCategory,
-        message: action.type,
-        data: breadcrumbDataFromAction(action)
-      });
+      if (filterBreadcrumbActions(action) === true) {
+        Raven.captureBreadcrumb({
+          category: breadcrumbCategory,
+          message: action.type,
+          data: breadcrumbDataFromAction(action)
+        });
+      }
 
       lastAction = action;
       return next(action);
