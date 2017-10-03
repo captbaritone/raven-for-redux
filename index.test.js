@@ -201,19 +201,21 @@ describe("raven-for-redux", function() {
     it("filters actions for breadcrumbs", function() {
       context.store.dispatch({ type: "INCREMENT" });
       context.store.dispatch({ type: "UNINTERESTING_ACTION" });
-      context.store.dispatch({ type: "INCREMENT" });
-      context.store.dispatch({ type: "UNINTERESTING_ACTION" });
       context.store.dispatch({ type: "UNINTERESTING_ACTION" });
       Raven.captureMessage("report!");
 
       expect(context.mockTransport).toHaveBeenCalledTimes(1);
-      const {
-        extra,
-        breadcrumbs
-      } = context.mockTransport.mock.calls[0][0].data;
+      const { breadcrumbs } = context.mockTransport.mock.calls[0][0].data;
+      expect(breadcrumbs.values.length).toBe(1);
+    });
+    it("sends action with data.extra even if it was filtered", function() {
+      context.store.dispatch({ type: "UNINTERESTING_ACTION" });
+      Raven.captureMessage("report!");
+
+      expect(context.mockTransport).toHaveBeenCalledTimes(1);
+      const { extra } = context.mockTransport.mock.calls[0][0].data;
       // Even though the action isn't added to breadcrumbs, it should be sent with extra data
       expect(extra.lastAction).toEqual({ type: "UNINTERESTING_ACTION" });
-      expect(breadcrumbs.values.length).toBe(2);
     });
   });
 });
