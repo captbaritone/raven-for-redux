@@ -52,6 +52,7 @@ This library makes, what I think are, a few improvements over
    `<script>` tag.
 2. Adds your state and last action as context to _all_ errors, not just reducer
    exceptions.
+3. Allows filtering action breadcrumbs before sending to Sentry
 
 ## API: `createRavenMiddleware(Raven, [options])`
 
@@ -133,8 +134,8 @@ name, specify it here.
 Default: `action => true` _(Function)_
 
 If your app has certain actions that you do not want to send to Sentry, pass
-a filter function in this option. If the filter returns `true`, the action
-will be added as a breadcrumb, otherwise the action will be ignored.
+a filter function in this option. If the filter returns a truthy value, the
+action will be added as a breadcrumb, otherwise the action will be ignored.
 Note: even when the action has been filtered out, it may still be sent to
 Sentry as part of the extra data, if it was the last action before an error.
 
