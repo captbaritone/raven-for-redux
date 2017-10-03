@@ -117,6 +117,7 @@ describe("raven-for-redux", function() {
       context.breadcrumbDataFromAction = jest.fn(action => ({
         extra: action.extra
       }));
+      context.ignoreActions = ["UNINTERESTING_ACTION"];
 
       context.store = createStore(
         reducer,
@@ -124,7 +125,8 @@ describe("raven-for-redux", function() {
           createRavenMiddleware(Raven, {
             stateTransformer: context.stateTransformer,
             actionTransformer: context.actionTransformer,
-            breadcrumbDataFromAction: context.breadcrumbDataFromAction
+            breadcrumbDataFromAction: context.breadcrumbDataFromAction,
+            ignoreActions: context.ignoreActions
           })
         )
       );
@@ -176,6 +178,36 @@ describe("raven-for-redux", function() {
       expect(context.mockTransport.mock.calls[0][0].data.user).toEqual(
         userData
       );
+    });
+  });
+
+  describe("with ignoreActions option enabled", function() {
+    beforeEach(function() {
+      context.ignoreActions = ["UNINTERESTING_ACTION"];
+
+      context.store = createStore(
+        reducer,
+        applyMiddleware(
+          createRavenMiddleware(Raven, {
+            ignoreActions: context.ignoreActions
+          })
+        )
+      );
+    });
+    it("ignores actions specified in config", function() {
+      context.store.dispatch({ type: "INCREMENT" });
+      context.store.dispatch({ type: "UNINTERESTING_ACTION" });
+      context.store.dispatch({ type: "INCREMENT" });
+      context.store.dispatch({ type: "UNINTERESTING_ACTION" });
+      Raven.captureMessage("report!");
+
+      expect(context.mockTransport).toHaveBeenCalledTimes(1);
+      const {
+        extra,
+        breadcrumbs
+      } = context.mockTransport.mock.calls[0][0].data;
+      expect(extra.lastAction).toEqual({ type: "INCREMENT" });
+      expect(breadcrumbs.values.length).toBe(2);
     });
   });
 });

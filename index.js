@@ -6,7 +6,8 @@ function createRavenMiddleware(Raven, options = {}) {
     breadcrumbDataFromAction = getUndefined,
     actionTransformer = identity,
     stateTransformer = identity,
-    breadcrumbCategory = "redux-action"
+    breadcrumbCategory = "redux-action",
+    ignoreActions = []
   } = options;
 
   return store => {
@@ -21,6 +22,8 @@ function createRavenMiddleware(Raven, options = {}) {
     return next => action => {
       // Log the action taken to Raven so that we have narrative context in our
       // error report.
+      if (ignoreActions.indexOf(action.type) > -1) return next(action);
+
       Raven.captureBreadcrumb({
         category: breadcrumbCategory,
         message: action.type,
