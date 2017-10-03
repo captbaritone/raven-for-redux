@@ -128,6 +128,13 @@ Each breadcrumb is assigned a category. By default all action breadcrumbs are
 given the category `"redux-action"`. If you would prefer a different category
 name, specify it here.
 
+#### `ignoreActions` _(Array)_
+
+Default: `[]`
+
+If your app has certain actions that you do not want to send to Sentry, pass
+an array of the action types in this option. They will not be logged.
+
 ## Changelog
 
 ### 1.0.0
