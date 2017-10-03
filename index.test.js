@@ -117,7 +117,9 @@ describe("raven-for-redux", function() {
       context.breadcrumbDataFromAction = jest.fn(action => ({
         extra: action.extra
       }));
-      context.ignoreActions = ["UNINTERESTING_ACTION"];
+      context.filterBreadcrumbActions = action => {
+        return action.type !== "UNINTERESTING_ACTION";
+      };
 
       context.store = createStore(
         reducer,
@@ -126,7 +128,7 @@ describe("raven-for-redux", function() {
             stateTransformer: context.stateTransformer,
             actionTransformer: context.actionTransformer,
             breadcrumbDataFromAction: context.breadcrumbDataFromAction,
-            ignoreActions: context.ignoreActions
+            filterBreadcrumbActions: context.filterBreadcrumbActions
           })
         )
       );
@@ -184,7 +186,7 @@ describe("raven-for-redux", function() {
   describe("with filterBreadcrumbActions option enabled", function() {
     beforeEach(function() {
       context.filterBreadcrumbActions = action => {
-        return action.type === "INCREMENT";
+        return action.type !== "UNINTERESTING_ACTION";
       };
 
       context.store = createStore(
@@ -200,6 +202,7 @@ describe("raven-for-redux", function() {
       context.store.dispatch({ type: "INCREMENT" });
       context.store.dispatch({ type: "UNINTERESTING_ACTION" });
       context.store.dispatch({ type: "INCREMENT" });
+      context.store.dispatch({ type: "UNINTERESTING_ACTION" });
       context.store.dispatch({ type: "UNINTERESTING_ACTION" });
       Raven.captureMessage("report!");
 
