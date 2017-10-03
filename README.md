@@ -141,6 +141,10 @@ Sentry as part of the extra data, if it was the last action before an error.
 
 ## Changelog
 
+### 1.1.0
+
+* Add `filterBreadcrumbActions` option. ([#39])
+
 ### 1.0.0
 
 * No changes. Just bringing the project out of beta.
@@ -166,3 +170,4 @@ Sentry as part of the extra data, if it was the last action before an error.
 [#11]: https://github.com/captbaritone/raven-for-redux/pull/11
 [#8]: https://github.com/captbaritone/raven-for-redux/pull/8
 [1def9a7]: https://github.com/captbaritone/raven-for-redux/commit/1def9a747d7b711ad93da531b8ff9d128c352b45
+[#39]: https://github.com/captbaritone/raven-for-redux/pull/39
