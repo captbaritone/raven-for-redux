@@ -141,7 +141,7 @@ Sentry as part of the extra data, if it was the last action before an error.
 
 ## Changelog
 
-### 1.1.0
+### 1.1.1
 
 * Add `filterBreadcrumbActions` option. ([#39])
 
