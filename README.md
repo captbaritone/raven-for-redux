@@ -139,6 +139,8 @@ action will be added as a breadcrumb, otherwise the action will be ignored.
 Note: even when the action has been filtered out, it may still be sent to
 Sentry as part of the extra data, if it was the last action before an error.
 
+This option was introduced in version 1.1.1.
+
 ## Changelog
 
 ### 1.1.1
