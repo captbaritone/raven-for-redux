@@ -109,7 +109,7 @@ If you have specified a [`dataCallback`] when you configured Raven, note that
 
 #### `stateTransformer`
 
-Default: `state => state` _(Function)_
+Default: `state => state`
 
 In some cases your state may be extremely large, or contain sensitive data.
 In those cases, you may want to transform your state before sending it to
@@ -131,7 +131,7 @@ name, specify it here.
 
 #### `filterBreadcrumbActions` _(Function)_
 
-Default: `action => true` _(Function)_
+Default: `action => true`
 
 If your app has certain actions that you do not want to send to Sentry, pass
 a filter function in this option. If the filter returns a truthy value, the
