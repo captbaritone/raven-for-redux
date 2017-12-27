@@ -53,6 +53,7 @@ This library makes, what I think are, a few improvements over
 2. Adds your state and last action as context to _all_ errors, not just reducer
    exceptions.
 3. Allows filtering action breadcrumbs before sending to Sentry
+4. Allows you to define a user context mapping from the state
 
 ## API: `createRavenMiddleware(Raven, [options])`
 
@@ -141,6 +142,24 @@ Sentry as part of the extra data, if it was the last action before an error.
 
 This option was introduced in version 1.1.1.
 
+#### `getUserContext` _(Optional Function)_
+
+Signature: `state => userContext`
+
+The [user context] is an important part of the error report. This function
+allows you to define a mapping from the `state` to the user context. When
+`getUserContext` is spesified, the result of `getUserContext`
+will set the the user context before sending the error report.
+
+Be careful not to mutate your `state` within this function.
+
+If you have specified a [`dataCallback`] when you configured Raven, note that
+`getUserContext` will be applied _before_ your specified `dataCallback`.
+When a `getUserContext` function is given, it will override the user context
+set elsewhere.
+
+This option was introduced in version 1.X
+
 ## Changelog
 
 ### 1.1.1
@@ -168,6 +187,7 @@ This option was introduced in version 1.1.1.
 [Raven]: https://docs.sentry.io/clients/javascript/
 [Raven Breadcrumbs]: https://docs.sentry.io/clients/javascript/usage/#recording-breadcrumbs
 [Breadcrumb documentation]: https://docs.sentry.io/learn/breadcrumbs/
+[user context]: https://docs.sentry.io/learn/context/#capturing-the-user
 [`dataCallback`]: https://docs.sentry.io/clients/javascript/config/
 [#11]: https://github.com/captbaritone/raven-for-redux/pull/11
 [#8]: https://github.com/captbaritone/raven-for-redux/pull/8
