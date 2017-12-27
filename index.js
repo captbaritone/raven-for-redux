@@ -8,15 +8,20 @@ function createRavenMiddleware(Raven, options = {}) {
     actionTransformer = identity,
     stateTransformer = identity,
     breadcrumbCategory = "redux-action",
-    filterBreadcrumbActions = filter
+    filterBreadcrumbActions = filter,
+    getUserContext
   } = options;
 
   return store => {
     let lastAction;
 
     Raven.setDataCallback((data, original) => {
+      const state = store.getState();
       data.extra.lastAction = actionTransformer(lastAction);
-      data.extra.state = stateTransformer(store.getState());
+      data.extra.state = stateTransformer(state);
+      if (getUserContext) {
+        data.user = getUserContext(state);
+      }
       return original ? original(data) : data;
     });
 
