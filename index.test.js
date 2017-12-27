@@ -196,7 +196,49 @@ describe("raven-for-redux", () => {
       );
     });
   });
+  describe("with multiple data callbaks", () => {
+    beforeEach(() => {
+      context.firstOriginalDataCallback = jest.fn((data, original) => {
+        const newData = Object.assign({}, data, {
+          firstData: "first"
+        });
+        return original ? original(newData) : newData;
+      });
+      context.secondOriginalDataCallback = jest.fn((data, original) => {
+        const newData = Object.assign({}, data, {
+          secondData: "second"
+        });
+        return original ? original(newData) : newData;
+      });
+      Raven.setDataCallback(context.firstOriginalDataCallback);
+      Raven.setDataCallback(context.secondOriginalDataCallback);
+      context.stateTransformer = jest.fn(state => `transformed state ${state}`);
 
+      context.store = createStore(
+        reducer,
+        applyMiddleware(
+          createRavenMiddleware(Raven, {
+            stateTransformer: context.stateTransformer
+          })
+        )
+      );
+    });
+
+    it("runs all the data callbacks given", () => {
+      context.store.dispatch({ type: "INCREMENT" });
+      expect(() => {
+        context.store.dispatch({ type: "THROW" });
+      }).toThrow();
+      expect(context.firstOriginalDataCallback).toHaveBeenCalledTimes(1);
+      expect(context.secondOriginalDataCallback).toHaveBeenCalledTimes(1);
+
+      expect(context.mockTransport).toHaveBeenCalledTimes(1);
+      const data = context.mockTransport.mock.calls[0][0].data;
+      expect(data.extra.state).toEqual("transformed state 1");
+      expect(data.firstData).toEqual("first");
+      expect(data.secondData).toEqual("second");
+    });
+  });
   describe("with filterBreadcrumbActions option enabled", () => {
     beforeEach(() => {
       context.filterBreadcrumbActions = action => {
