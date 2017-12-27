@@ -107,6 +107,17 @@ describe("raven-for-redux", () => {
       expect(extra.lastAction).toEqual({ type: "DOUBLE" });
       expect(extra.state).toEqual(4);
     });
+    it("preserves user context", () => {
+      const userData = { userId: 1, username: "captbaritone" };
+      Raven.setUserContext(userData);
+      expect(() => {
+        context.store.dispatch({ type: "THROW", extra: "BAR" });
+      }).toThrow();
+
+      expect(context.mockTransport.mock.calls[0][0].data.user).toEqual(
+        userData
+      );
+    });
   });
   describe("with all the options enabled", () => {
     beforeEach(() => {
@@ -114,6 +125,7 @@ describe("raven-for-redux", () => {
       context.actionTransformer = jest.fn(
         action => `transformed action ${action.type}`
       );
+      context.getUserContext = jest.fn(state => `user context ${state}`);
       context.breadcrumbDataFromAction = jest.fn(action => ({
         extra: action.extra
       }));
@@ -128,7 +140,8 @@ describe("raven-for-redux", () => {
             stateTransformer: context.stateTransformer,
             actionTransformer: context.actionTransformer,
             breadcrumbDataFromAction: context.breadcrumbDataFromAction,
-            filterBreadcrumbActions: context.filterBreadcrumbActions
+            filterBreadcrumbActions: context.filterBreadcrumbActions,
+            getUserContext: context.getUserContext
           })
         )
       );
@@ -170,7 +183,8 @@ describe("raven-for-redux", () => {
       expect(breadcrumbs.values[0].data).toMatchObject({ extra: "FOO" });
       expect(breadcrumbs.values[1].data).toMatchObject({ extra: "BAR" });
     });
-    it("preserves user context", () => {
+    it("transforms the user context on data callback", () => {
+      context.store.dispatch({ type: "INCREMENT", extra: "FOO" });
       const userData = { userId: 1, username: "captbaritone" };
       Raven.setUserContext(userData);
       expect(() => {
@@ -178,7 +192,7 @@ describe("raven-for-redux", () => {
       }).toThrow();
 
       expect(context.mockTransport.mock.calls[0][0].data.user).toEqual(
-        userData
+        "user context 1"
       );
     });
   });
