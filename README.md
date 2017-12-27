@@ -107,7 +107,7 @@ Be careful not to mutate your `action` within this function.
 If you have specified a [`dataCallback`] when you configured Raven, note that
 `actionTransformer` will be applied _before_ your specified `dataCallback`.
 
-#### `stateTransformer`
+#### `stateTransformer` _(Function)_
 
 Default: `state => state`
 
