@@ -8,7 +8,7 @@
 Logs the type of each dispatched action to Raven as "breadcrumbs" and attaches
 your last action and current Redux state as additional context.
 
-Inspired by [redux-raven-middleware] but with a slightly different approach.
+Inspired by [redux-raven-middleware] but with a slightly [different approach](#improvements).
 
 ## Installation
 
