@@ -146,21 +146,24 @@ This option was introduced in version 1.1.1.
 
 Signature: `state => userContext`
 
-The [user context] is an important part of the error report. This function
-allows you to define a mapping from the `state` to the user context. When
-`getUserContext` is spesified, the result of `getUserContext`
-will set the the user context before sending the error report.
-
-Be careful not to mutate your `state` within this function.
+Raven allows you to associcate a [user context] with each error report.
+`getUserContext` allows you to define a mapping from your Redux `state` to
+the user context. When `getUserContext` is specified, the result of
+`getUserContext` will be used to derive the user context before sending an
+error report. Be careful not to mutate your `state` within this function.
 
 If you have specified a [`dataCallback`] when you configured Raven, note that
 `getUserContext` will be applied _before_ your specified `dataCallback`.
-When a `getUserContext` function is given, it will override the user context
-set elsewhere.
+When a `getUserContext` function is given, it will override any previously
+set user context.
 
-This option was introduced in version 1.X
+This option was introduced in version 1.2.0.
 
 ## Changelog
+
+### 1.2.0
+
+* Add `getUserContext` option. ([#49])
 
 ### 1.1.1
 
