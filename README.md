@@ -41,9 +41,13 @@ export default createStore(
 
 For a working example, see the [example](./example/) directory.
 
-### Server side rendering (SSR)
+### Server side rendering (SSR) or Multiple Stores
 
-It's possible that using this library can cause large memory leaks on your server when you are doing SSR, since Raven will continue to hold a reference our original `dataCallback` which has the store implicitly bound into it. See [issue #50](https://github.com/captbaritone/raven-for-redux/issues/50).
+It's possible that using this library can cause large memory leaks on your server when you are doing SSR, since Raven will continue to hold a reference our original `dataCallback` which has the store implicitly bound into it.
+
+Another possible use case is where a user might have `n` different Redux stores on a given page, and might want to record context about all of them.
+
+See [issue #50](https://github.com/captbaritone/raven-for-redux/issues/50).
 
 To mitigate this issue, in your Raven setup function add the line `Raven.setDataCallback(null)`.
 
