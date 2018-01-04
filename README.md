@@ -41,6 +41,26 @@ export default createStore(
 
 For a working example, see the [example](./example/) directory.
 
+### Server side rendering (SSR)
+
+It's possible that using this library can cause large memory leaks on your server when you are doing SSR, since Raven will continue to hold a reference our original `dataCallback` which has the store implicitly bound into it. See [issue #50](https://github.com/captbaritone/raven-for-redux/issues/50).
+
+To mitigate this issue, in your Raven setup function add the line `Raven.setDataCallback(null)`.
+
+```
+export default function setupRaven() {
+  // Setting up DSN and options
+  
+  // Install
+  Raven.config(SENTRY_DSN_PUBLIC, options).install();
+  
+  // Fixes memory leak during SSR
+  Raven.setDataCallback(null);
+  
+  return Raven;
+}
+```
+
 ## Improvements
 
 This library makes, what I think are, a few improvements over
