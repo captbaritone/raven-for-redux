@@ -17,6 +17,7 @@ const createRavenMiddleware = (function() {
     if (!called) called = true;
     else {
       if (Raven._globalOptions.dataCallback instanceof Function) {
+        // eslint-disable-next-line no-console
         console.warn(
           "Possible memory leak detected! Refer to https://github.com/captbaritone/raven-for-redux."
         );
