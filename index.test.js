@@ -38,10 +38,8 @@ describe("raven-for-redux", () => {
   });
   describe("in the default configuration", () => {
     beforeEach(() => {
-      context.store = createStore(
-        reducer,
-        applyMiddleware(createRavenMiddleware(Raven))
-      );
+      context.middleware = createRavenMiddleware(Raven);
+      context.store = createStore(reducer, applyMiddleware(context.middleware));
     });
     it("includes the initial state when crashing/messaging before any action has been dispatched", () => {
       Raven.captureMessage("report!");
@@ -95,6 +93,40 @@ describe("raven-for-redux", () => {
         data: undefined,
         message: "THROW"
       });
+    });
+    it("includes timestamps in the breadcrumbs", () => {
+      context.store.dispatch({ type: "INCREMENT", extra: "FOO" });
+      expect(() => {
+        context.store.dispatch({ type: "THROW", extra: "BAR" });
+      }).toThrow();
+      const { breadcrumbs } = context.mockTransport.mock.calls[0][0].data;
+      const firstBreadcrumb = breadcrumbs.values[1];
+      expect(firstBreadcrumb.timestamp).toBeLessThanOrEqual(+new Date() / 1000);
+    });
+    it("trims breadcrumbs over 100", () => {
+      let n = 150;
+      while (n--) {
+        context.store.dispatch({ type: "INCREMENT", extra: "FOO" });
+      }
+      expect(() => {
+        context.store.dispatch({ type: "THROW", extra: "BAR" });
+      }).toThrow();
+      const { breadcrumbs } = context.mockTransport.mock.calls[0][0].data;
+      expect(breadcrumbs.values.length).toBe(100);
+    });
+    it("preserves order of native Raven breadcrumbs & raven-for-redux breadcrumbs", async () => {
+      context.store.dispatch({ type: "INCREMENT", extra: "FOO" });
+      await new Promise(resolve => setTimeout(resolve, 100));
+      Raven.captureBreadcrumb({ message: "some message" });
+      await new Promise(resolve => setTimeout(resolve, 100));
+      expect(() => {
+        context.store.dispatch({ type: "THROW", extra: "BAR" });
+      }).toThrow();
+      const { breadcrumbs } = context.mockTransport.mock.calls[0][0].data;
+      expect(breadcrumbs.values.length).toBe(3);
+      expect(breadcrumbs.values[0]).toMatchObject({ message: "INCREMENT" });
+      expect(breadcrumbs.values[1]).toMatchObject({ message: "some message" });
+      expect(breadcrumbs.values[2]).toMatchObject({ message: "THROW" });
     });
     it("includes the last state/action when crashing/reporting outside the reducer", () => {
       context.store.dispatch({ type: "INCREMENT" });

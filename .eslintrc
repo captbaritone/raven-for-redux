@@ -12,11 +12,12 @@
         "prefer-arrow-callback": "error"
     },
     "parserOptions": {
-        "ecmaVersion": 6,
+        "ecmaVersion": 8,
         "sourceType": "script"
     },
     "env": {
         "jest": true,
-        "node": true
+        "node": true,
+        "es6": true
     }
 }
