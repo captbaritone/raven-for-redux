@@ -1,10 +1,9 @@
-const Raven = require("raven-js");
+// Access the Raven constructor, rather than the normal output which is a singleton.
+const _Raven = require("raven-js/src/raven");
 const createRavenMiddleware = require("./index");
 const { createStore, applyMiddleware } = require("redux");
 
-Raven.config("https://5d5bf17b1bed4afc9103b5a09634775e@sentry.io/146969", {
-  allowDuplicates: true
-}).install();
+let Raven;
 
 const reducer = (previousState = 0, action) => {
   switch (action.type) {
@@ -23,18 +22,19 @@ const reducer = (previousState = 0, action) => {
   }
 };
 
-const context = {};
+let context;
 
 describe("raven-for-redux", () => {
   beforeEach(() => {
+    context = {};
+    Raven && Raven.uninstall();
+    Raven = new _Raven();
+    Raven.config("https://5d5bf17b1bed4afc9103b5a09634775e@sentry.io/146969", {
+      allowDuplicates: true
+    });
+
     context.mockTransport = jest.fn();
     Raven.setTransport(context.mockTransport);
-    Raven.setDataCallback(undefined);
-    Raven.setBreadcrumbCallback(undefined);
-    Raven.setUserContext(undefined);
-
-    Raven._breadcrumbs = [];
-    Raven._globalContext = {};
   });
   describe("in the default configuration", () => {
     beforeEach(() => {
@@ -149,6 +149,13 @@ describe("raven-for-redux", () => {
       expect(context.mockTransport.mock.calls[0][0].data.user).toEqual(
         userData
       );
+    });
+    it("a middleware.captureException method is not created initially", () => {
+      const unusedMiddleware = createRavenMiddleware(Raven);
+      expect(unusedMiddleware.captureException).toBe(undefined);
+    });
+    it("a middleware.captureException method is not created during middleware initialization", () => {
+      expect(context.middleware.captureException).toBe(undefined);
     });
   });
   describe("with all the options enabled", () => {
@@ -304,6 +311,49 @@ describe("raven-for-redux", () => {
       const { extra } = context.mockTransport.mock.calls[0][0].data;
       // Even though the action isn't added to breadcrumbs, it should be sent with extra data
       expect(extra.lastAction).toEqual({ type: "UNINTERESTING_ACTION" });
+    });
+  });
+  describe("with the `global` option disabled", () => {
+    beforeEach(() => {
+      context.middleware = createRavenMiddleware(Raven, {
+        global: false
+      });
+      context.store = createStore(reducer, applyMiddleware(context.middleware));
+    });
+    it("Does not attach Redux store context to global errors", () => {
+      context.store.dispatch({ type: "INCREMENT" });
+      Raven.captureException(new Error("Some Exception"));
+      expect(context.mockTransport).toHaveBeenCalledTimes(1);
+      const { data } = context.mockTransport.mock.calls[0][0];
+      expect(data.extra.state).toBe(undefined);
+      expect(data.extra.lastAction).toBe(undefined);
+      expect(data.breadcrumbs).toBe(undefined);
+    });
+    it("Uses Raven.captureException if middleware.captureException is called before the middleware is intialized", () => {
+      const unusedMiddleware = createRavenMiddleware(Raven, { global: false });
+      unusedMiddleware.captureException(new Error("Some Exception"));
+      expect(context.mockTransport).toHaveBeenCalledTimes(1);
+      const { data } = context.mockTransport.mock.calls[0][0];
+      expect(data.extra.state).toBe(undefined);
+      expect(data.extra.lastAction).toBe(undefined);
+      expect(data.breadcrumbs).toBe(undefined);
+    });
+    it("can capture a contextualized exception via middlware.captureException", () => {
+      context.store.dispatch({ type: "INCREMENT" });
+      context.middleware.captureException(new Error("Some Exception"));
+
+      expect(context.mockTransport).toHaveBeenCalledTimes(1);
+
+      const { data } = context.mockTransport.mock.calls[0][0];
+      expect(data.breadcrumbs.values.length).toBe(1);
+      expect(data.breadcrumbs.values[0]).toMatchObject({
+        category: "redux-action",
+        message: "INCREMENT"
+        // Omitted to preserve determinism
+        // timestamp: 1517179663.76
+      });
+      expect(data.extra.lastAction).toEqual({ type: "INCREMENT" });
+      expect(data.extra.state).toBe(1);
     });
   });
 });
