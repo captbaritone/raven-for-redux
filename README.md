@@ -41,6 +41,16 @@ export default createStore(
 
 For a working example, see the [example](./example/) directory.
 
+### TypeScript
+`raven-for-redux` has TypeScript bindings available through [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/b7ca35ab023ba1758de9e07004adde71e911c28e/types/raven-for-redux/index.d.ts). Please note the import style below, as it differs from the JavaScript example and is required for these typings.
+```TypeScript
+import * as Raven from "raven-js";
+import * as createRavenMiddleware from "raven-for-redux";
+import { applyMiddleware, createStore } from "redux";
+
+//... (same as JavaScript example, but now with proper typings)
+```
+
 ## Improvements
 
 This library makes, what I think are, a few improvements over
