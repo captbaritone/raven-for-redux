@@ -6,7 +6,7 @@ Raven.config("https://5d5bf17b1bed4afc9103b5a09634775e@sentry.io/146969", {
   allowDuplicates: true
 }).install();
 
-const reducer = (previousState = 0, action) => {
+const reducer = (previousState = { value: 0 }, action) => {
   switch (action.type) {
     case "THROW":
       // Raven does not seem to be able to capture global exceptions in Jest tests.
@@ -15,9 +15,9 @@ const reducer = (previousState = 0, action) => {
         throw new Error("Reducer error");
       });
     case "INCREMENT":
-      return previousState + 1;
+      return { value: previousState.value + 1 };
     case "DOUBLE":
-      return (previousState = previousState * 2);
+      return { value: previousState.value * 2 };
     default:
       return previousState;
   }
@@ -47,7 +47,7 @@ describe("raven-for-redux", () => {
       expect(context.mockTransport).toHaveBeenCalledTimes(1);
       const { extra } = context.mockTransport.mock.calls[0][0].data;
       expect(extra.lastAction).toBe(undefined);
-      expect(extra.state).toEqual(0);
+      expect(extra.state).toEqual({ value: 0 });
     });
     it("returns the result of the next dispatch function", () => {
       expect(context.store.dispatch({ type: "INCREMENT" })).toEqual({
@@ -72,7 +72,7 @@ describe("raven-for-redux", () => {
 
       expect(context.mockTransport).toHaveBeenCalledTimes(1);
       const { extra } = context.mockTransport.mock.calls[0][0].data;
-      expect(extra.state).toBe(1);
+      expect(extra.state).toEqual({ value: 1 });
     });
     it("logs a breadcrumb for each action", () => {
       context.store.dispatch({ type: "INCREMENT", extra: "FOO" });
@@ -137,7 +137,7 @@ describe("raven-for-redux", () => {
       expect(context.mockTransport).toHaveBeenCalledTimes(1);
       const { extra } = context.mockTransport.mock.calls[0][0].data;
       expect(extra.lastAction).toEqual({ type: "DOUBLE" });
-      expect(extra.state).toEqual(4);
+      expect(extra.state).toEqual({ value: 4 });
     });
     it("preserves user context", () => {
       const userData = { userId: 1, username: "captbaritone" };
@@ -153,11 +153,13 @@ describe("raven-for-redux", () => {
   });
   describe("with all the options enabled", () => {
     beforeEach(() => {
-      context.stateTransformer = jest.fn(state => `transformed state ${state}`);
+      context.stateTransformer = jest.fn(
+        state => `transformed state ${state.value}`
+      );
       context.actionTransformer = jest.fn(
         action => `transformed action ${action.type}`
       );
-      context.getUserContext = jest.fn(state => `user context ${state}`);
+      context.getUserContext = jest.fn(state => `user context ${state.value}`);
       context.breadcrumbDataFromAction = jest.fn(action => ({
         extra: action.extra
       }));
@@ -244,7 +246,9 @@ describe("raven-for-redux", () => {
       });
       Raven.setDataCallback(context.firstOriginalDataCallback);
       Raven.setDataCallback(context.secondOriginalDataCallback);
-      context.stateTransformer = jest.fn(state => `transformed state ${state}`);
+      context.stateTransformer = jest.fn(
+        state => `transformed state ${state.value}`
+      );
 
       context.store = createStore(
         reducer,
