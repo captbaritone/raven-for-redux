@@ -41,6 +41,42 @@ describe("raven-for-redux", () => {
       context.middleware = createRavenMiddleware(Raven);
       context.store = createStore(reducer, applyMiddleware(context.middleware));
     });
+    it("merges Redux info with existing 'extras'", () => {
+      Raven.captureException(new Error("Crash!"), {
+        extra: { anotherValue: 10 }
+      });
+      const { extra } = context.mockTransport.mock.calls[0][0].data;
+      expect(extra).toMatchObject({
+        state: { value: 0 },
+        lastAction: undefined,
+        anotherValue: 10
+        // session:duration will also be defined
+      });
+    });
+    it("if explicitly passed extras contain a `state` property, the explicit version wins", () => {
+      Raven.captureException(new Error("Crash!"), {
+        extra: { anotherValue: 10, state: "SOME OTHER STATE" }
+      });
+      const { extra } = context.mockTransport.mock.calls[0][0].data;
+      expect(extra).toMatchObject({
+        state: "SOME OTHER STATE",
+        lastAction: undefined,
+        anotherValue: 10
+        // session:duration will also be defined
+      });
+    });
+    it("if explicitly passed extras contain a `lastAction` property, the explicit version wins", () => {
+      Raven.captureException(new Error("Crash!"), {
+        extra: { anotherValue: 10, lastAction: "SOME OTHER LAST ACTION" }
+      });
+      const { extra } = context.mockTransport.mock.calls[0][0].data;
+      expect(extra).toMatchObject({
+        state: { value: 0 },
+        lastAction: "SOME OTHER LAST ACTION",
+        anotherValue: 10
+        // session:duration will also be defined
+      });
+    });
     it("includes the initial state when crashing/messaging before any action has been dispatched", () => {
       Raven.captureMessage("report!");
 
