@@ -17,8 +17,11 @@ function createRavenMiddleware(Raven, options = {}) {
 
     Raven.setDataCallback((data, original) => {
       const state = store.getState();
-      data.extra.lastAction = actionTransformer(lastAction);
-      data.extra.state = stateTransformer(state);
+      const reduxExtra = {
+        lastAction: actionTransformer(lastAction),
+        state: stateTransformer(state)
+      };
+      data.extra = Object.assign(reduxExtra, data.extra);
       if (getUserContext) {
         data.user = getUserContext(state);
       }
