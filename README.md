@@ -8,7 +8,7 @@
 Logs the type of each dispatched action to Raven as "breadcrumbs" and attaches
 your last action and current Redux state as additional context.
 
-Inspired by [redux-raven-middleware] but with a slightly [different approach](#improvements).
+Inspired by [redux-raven-middleware] but with the great difference this package [injects Raven](#features).
 
 ## Installation
 
@@ -51,19 +51,14 @@ import { applyMiddleware, createStore } from "redux";
 //... (same as JavaScript example, but now with proper typings)
 ```
 
-## Improvements
+## Features
 
-This library makes, what I think are, a few improvements over
-`redux-raven-middlware`:
-
-1. Raven is injected rather than being setup inside the middleware. This allows
-   for more advanced configuration of Raven, as well as cases where Raven has
-   already been initialized. For example, if you include Raven as its own
-   `<script>` tag.
-2. Adds your state and last action as context to _all_ errors, not just reducer
-   exceptions.
-3. Allows filtering action breadcrumbs before sending to Sentry
-4. Allows you to define a user context mapping from the state
+* Raven is injected, which means:
+  * You can configure Raven as normally.
+  * All kind of uncaught exceptions is caught, [according to how Raven works](https://sentry.io/answers/capture-errors/).
+* State and last action is added as context to all errors.
+* Filter action breadcrumbs before sending to Sentry.
+* Define a user context mapping from the state.
 
 ## API: `createRavenMiddleware(Raven, [options])`
 
