@@ -1,7 +1,7 @@
 const identity = x => x;
 const getUndefined = () => {};
 const filter = () => true;
-function createSentryMiddleware(Sentry, options = {}) {
+function createRavenMiddleware(Raven, options = {}) {
   // TODO: Validate options.
   const {
     breadcrumbDataFromAction = getUndefined,
@@ -15,7 +15,7 @@ function createSentryMiddleware(Sentry, options = {}) {
   return store => {
     let lastAction;
 
-    Sentry.setDataCallback((data, original) => {
+    Raven.setDataCallback((data, original) => {
       const state = store.getState();
       const reduxExtra = {
         lastAction: actionTransformer(lastAction),
@@ -30,7 +30,7 @@ function createSentryMiddleware(Sentry, options = {}) {
 
     return next => action => {
       if (filterBreadcrumbActions(action)) {
-        Sentry.captureBreadcrumb({
+        Raven.captureBreadcrumb({
           category: breadcrumbCategory,
           message: action.type,
           data: breadcrumbDataFromAction(action)
@@ -43,4 +43,4 @@ function createSentryMiddleware(Sentry, options = {}) {
   };
 }
 
-module.exports = createSentryMiddleware;
+module.exports = createRavenMiddleware;
