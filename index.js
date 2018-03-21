@@ -29,8 +29,6 @@ function createRavenMiddleware(Raven, options = {}) {
     });
 
     return next => action => {
-      // Log the action taken to Raven so that we have narrative context in our
-      // error report.
       if (filterBreadcrumbActions(action)) {
         Raven.captureBreadcrumb({
           category: breadcrumbCategory,
