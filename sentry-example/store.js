@@ -6,19 +6,16 @@ import { rootReducers } from '../reducers'
 
 const logger = createLogger()
 
-const SentryDSN = 'https://xxxxx@sentry.io/xxxxx'
+let SentryDSN = 'https://xxxxx@sentry.io/xxxxx'
 Sentry.config(SentryDSN).install()
 
-export const configureStore = () => {
-  const store = createStore(
-    applyMiddleware(
-      reducer,
-       createRavenMiddleWare(Sentry, {
-        breadcrumbDataFromAction: action => {
-          return { STRING: action.str }
-        }
-      })
-    )
+export const store = createStore(
+  applyMiddleware(
+    reducer,
+     createRavenMiddleWare(Sentry, {
+      breadcrumbDataFromAction: action => {
+        return { STRING: action.str }
+      }
+    })
   )
-  return { store }
-}
+)
