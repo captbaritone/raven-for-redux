@@ -16,7 +16,7 @@ Inspired by [redux-raven-middleware] but with a slightly [different approach](#i
 
 ## Usage
 
-### React
+### Browser
 
 ```JavaScript
 // store.js
