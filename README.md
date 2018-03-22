@@ -16,6 +16,8 @@ Inspired by [redux-raven-middleware] but with a slightly [different approach](#i
 
 ## Usage
 
+### Browser
+
 ```JavaScript
 // store.js
 
@@ -37,6 +39,31 @@ export default createStore(
         })
     )
 );
+```
+
+### React Native (with Sentry)
+
+```JavaScript
+// store.js
+
+import { createStore, applyMiddleware } from 'redux'
+import { Sentry } from 'react-native-sentry'
+import createRavenMiddleware from 'raven-for-redux'
+
+import { reducer } from './my_reducer'
+
+Sentry.config('YOUR_DSN').install()
+
+export default createStore(
+    reducer,
+    applyMiddleware(
+        // Middlewares, like `redux-thunk` that intercept or emit actions should
+        // precede `raven-for-redux`.
+        createRavenMiddleware(Sentry, {
+            // Optionally pass some options here.
+        })
+    )
+)
 ```
 
 For a working example, see the [example](./example/) directory.
