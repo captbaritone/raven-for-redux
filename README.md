@@ -171,6 +171,17 @@ set user context.
 
 This option was introduced in version 1.2.0.
 
+#### `getTags` _(Optional Function)_
+
+Signature: `state => tags`
+
+Raven allows you to associate [tags] with each report.
+`getTags` allows you to define a mapping from your Redux `state` to
+an object of tags (key → value). Be careful not to mutate your `state`
+within this function.
+
+This option was introduced in version 1.3.0.
+
 ## Changelog
 
 ### 1.2.0
@@ -204,6 +215,7 @@ This option was introduced in version 1.2.0.
 [Breadcrumb documentation]: https://docs.sentry.io/learn/breadcrumbs/
 [user context]: https://docs.sentry.io/learn/context/#capturing-the-user
 [`dataCallback`]: https://docs.sentry.io/clients/javascript/config/
+[tags]: https://docs.sentry.io/learn/context/#tagging-events
 [#11]: https://github.com/captbaritone/raven-for-redux/pull/11
 [#8]: https://github.com/captbaritone/raven-for-redux/pull/8
 [1def9a7]: https://github.com/captbaritone/raven-for-redux/commit/1def9a747d7b711ad93da531b8ff9d128c352b45
