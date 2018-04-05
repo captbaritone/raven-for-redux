@@ -180,14 +180,17 @@ Raven allows you to associate [tags] with each report.
 an object of tags (key → value). Be careful not to mutate your `state`
 within this function.
 
-This option was introduced in version 1.3.0.
+This option was introduced in version 1.3.1.
 
 ## Changelog
+
+### 1.3.1
+
+* Add `getTags` option. ([#69])
 
 ### 1.3.0
 
 * The Raven "extras" that we add are merged with existing extras rather than replacing them. ([#59])
-* Add `getTags` option. ([#69])
 
 ### 1.2.0
 
