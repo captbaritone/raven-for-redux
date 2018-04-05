@@ -184,6 +184,11 @@ This option was introduced in version 1.3.0.
 
 ## Changelog
 
+### 1.3.0
+
+* The Raven "extras" that we add are merged with existing extras rather than replacing them. ([#59])
+* Add `getTags` option. ([#69])
+
 ### 1.2.0
 
 * Add `getUserContext` option. ([#49])
@@ -221,3 +226,5 @@ This option was introduced in version 1.3.0.
 [1def9a7]: https://github.com/captbaritone/raven-for-redux/commit/1def9a747d7b711ad93da531b8ff9d128c352b45
 [#39]: https://github.com/captbaritone/raven-for-redux/pull/39
 [#49]: https://github.com/captbaritone/raven-for-redux/pull/49
+[#59]: https://github.com/captbaritone/raven-for-redux/pull/59
+[#69]: https://github.com/captbaritone/raven-for-redux/pull/69
