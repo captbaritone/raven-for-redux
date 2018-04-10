@@ -9,6 +9,7 @@ function createRavenMiddleware(Raven, options = {}) {
     stateTransformer = identity,
     breadcrumbCategory = "redux-action",
     filterBreadcrumbActions = filter,
+    getExtra = getUndefined,
     getUserContext,
     getTags
   } = options;
@@ -22,7 +23,7 @@ function createRavenMiddleware(Raven, options = {}) {
         lastAction: actionTransformer(lastAction),
         state: stateTransformer(state)
       };
-      data.extra = Object.assign(reduxExtra, data.extra);
+      data.extra = Object.assign(reduxExtra, data.extra, getExtra(state));
       if (getUserContext) {
         data.user = getUserContext(state);
       }

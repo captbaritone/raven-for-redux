@@ -197,6 +197,9 @@ describe("raven-for-redux", () => {
       );
       context.getUserContext = jest.fn(state => `user context ${state.value}`);
       context.getTags = jest.fn(state => `tags ${state.value}`);
+      context.getExtra = jest.fn(state => ({
+        extra: `extra ${state.value}`
+      }));
       context.breadcrumbDataFromAction = jest.fn(action => ({
         extra: action.extra
       }));
@@ -212,6 +215,7 @@ describe("raven-for-redux", () => {
             actionTransformer: context.actionTransformer,
             breadcrumbDataFromAction: context.breadcrumbDataFromAction,
             filterBreadcrumbActions: context.filterBreadcrumbActions,
+            getExtra: context.getExtra,
             getUserContext: context.getUserContext,
             getTags: context.getTags
           })
@@ -275,6 +279,16 @@ describe("raven-for-redux", () => {
       expect(context.mockTransport).toHaveBeenCalledTimes(1);
       expect(context.mockTransport.mock.calls[0][0].data.tags).toEqual(
         "tags 1"
+      );
+    });
+    it("transforms user defined extras on data callback", () => {
+      context.store.dispatch({ type: "INCREMENT", extra: "FOO" });
+      expect(() => {
+        context.store.dispatch({ type: "THROW", extra: "BAR" });
+      }).toThrow();
+      expect(context.mockTransport).toHaveBeenCalledTimes(1);
+      expect(context.mockTransport.mock.calls[0][0].data.extra.extra).toEqual(
+        "extra 1"
       );
     });
   });
