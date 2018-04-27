@@ -182,6 +182,15 @@ within this function.
 
 This option was introduced in version 1.3.1.
 
+#### `getExtra` _(Optional Function)_
+
+Signature: `state => extra`
+
+Raven allows you to associate [extra] information with each report.
+By default, `raven-for-redux` will provide the state and the last action
+as extra information. `getExtra` allows you to define any additional
+information, in the form of an object, to send with the crash reports.
+
 ## Changelog
 
 ### 1.3.1
@@ -224,6 +233,7 @@ This option was introduced in version 1.3.1.
 [user context]: https://docs.sentry.io/learn/context/#capturing-the-user
 [`dataCallback`]: https://docs.sentry.io/clients/javascript/config/
 [tags]: https://docs.sentry.io/learn/context/#tagging-events
+[extra]: https://docs.sentry.io/learn/context/#extra-context
 [#11]: https://github.com/captbaritone/raven-for-redux/pull/11
 [#8]: https://github.com/captbaritone/raven-for-redux/pull/8
 [1def9a7]: https://github.com/captbaritone/raven-for-redux/commit/1def9a747d7b711ad93da531b8ff9d128c352b45
