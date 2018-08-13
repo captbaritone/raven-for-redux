@@ -46,7 +46,7 @@
     "eslint-config-hss": "^6.0.0",
     "eslint-config-prettier": "^2.0.0",
     "eslint-plugin-prettier": "^2.0.1",
-    "eslint-plugin-react": "^7.0.1",
+    "eslint-plugin-react": "7.10.0",
     "jest": "^22.0.0",
     "prettier": "^1.7.4",
     "raven-js": "^3.12.1",
