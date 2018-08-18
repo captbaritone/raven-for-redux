@@ -86,7 +86,7 @@ optional keys.
 Default: `action => undefined`
 
 Raven allows you to attach additional context information to each breadcrumb
-in the form of a `data` object. `breadcrubmDataFromAction` allows you to specify
+in the form of a `data` object. `breadcrumbDataFromAction` allows you to specify
 a transform function which is passed the `action` object and returns a `data`
 object. Which will be logged to Sentry along with the breadcrumb.
 
