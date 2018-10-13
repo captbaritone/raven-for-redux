@@ -2,9 +2,9 @@ const Raven = require("raven-js");
 const createRavenMiddleware = require("./index");
 const { createStore, applyMiddleware } = require("redux");
 
-Raven.config("https://5d5bf17b1bed4afc9103b5a09634775e@sentry.io/146969", {
-  allowDuplicates: true
-}).install();
+Raven.config(
+  "https://5d5bf17b1bed4afc9103b5a09634775e@sentry.io/146969"
+).install();
 
 const reducer = (previousState = { value: 0 }, action) => {
   switch (action.type) {
@@ -32,7 +32,7 @@ describe("raven-for-redux", () => {
     Raven.setDataCallback(undefined);
     Raven.setBreadcrumbCallback(undefined);
     Raven.setUserContext(undefined);
-
+    Raven._globalOptions.allowDuplicates = true;
     Raven._breadcrumbs = [];
     Raven._globalContext = {};
   });
@@ -185,6 +185,32 @@ describe("raven-for-redux", () => {
       expect(context.mockTransport.mock.calls[0][0].data.user).toEqual(
         userData
       );
+    });
+
+    ["captureException", "captureMessage"].forEach(fnName => {
+      it(`retries ${fnName} without any state if Sentry returns 413 request too large`, () => {
+        context.mockTransport.mockImplementationOnce(options => {
+          options.onError({ request: { status: 413 } });
+        });
+        // allowDuplicates is set to true inside our handler and reset afterwards
+        Raven._globalOptions.allowDuplicates = null;
+        Raven[fnName].call(Raven, new Error("Crash!"));
+
+        // Ensure transport and allowDuplicates have been reset
+        expect(Raven._globalOptions.transport).toEqual(context.mockTransport);
+        expect(Raven._globalOptions.allowDuplicates).toEqual(null);
+        expect(context.mockTransport).toHaveBeenCalledTimes(2);
+        const { extra } = context.mockTransport.mock.calls[0][0].data;
+        expect(extra).toMatchObject({
+          state: { value: 0 },
+          lastAction: undefined
+        });
+        const { extra: extra2 } = context.mockTransport.mock.calls[1][0].data;
+        expect(extra2).toMatchObject({
+          state: "Failed to submit state to Sentry: 413 request too large.",
+          lastAction: undefined
+        });
+      });
     });
   });
   describe("with all the options enabled", () => {

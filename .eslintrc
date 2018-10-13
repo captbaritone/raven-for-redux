@@ -9,7 +9,8 @@
     ],
     "rules": {
         "prettier/prettier": "error",
-        "prefer-arrow-callback": "error"
+        "prefer-arrow-callback": "error",
+        "prefer-reflect": "off",
     },
     "parserOptions": {
         "ecmaVersion": 8,
