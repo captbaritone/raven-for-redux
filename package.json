@@ -6,9 +6,9 @@
   "scripts": {
     "fix": "eslint --fix .",
     "tdd": "jest --watch",
-    "test": "jest --coverage && npm run lint",
+    "test": "jest --coverage --collectCoverageFrom=index.js && npm run lint",
     "lint": "eslint .",
-    "build": "babel index.js --out-dir built/",
+    "build": "babel index.js vendor/json-stringify-safe/stringify.js --out-dir built/",
     "prepublishOnly": "npm run test && npm run build",
     "serve-example": "webpack-dev-server --watch --config=example/webpack.config.js"
   },
