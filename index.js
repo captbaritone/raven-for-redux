@@ -1,12 +1,45 @@
 const identity = x => x;
 const getUndefined = () => {};
 const filter = () => true;
+// Include a heuristic to remove redux-undo history (https://github.com/omnidan/redux-undo)
+// 'past' and 'future' are arrays that can include a large number of copies of the state.
+const removeHistoryFromObject = obj =>
+  Object.assign({}, obj, {
+    past: `redux-undo history was automatically removed. (Entries: ${
+      obj.past.length
+    })`,
+    future: `redux-undo history was automatically removed. (Entries: ${
+      obj.future.length
+    })`
+  });
+const isReduxUndoState = state =>
+  state &&
+  state.past &&
+  state.present &&
+  state.future &&
+  typeof state.index === "number" &&
+  typeof state.limit === "number";
+const removeReduxUndoHistoryFromState = state => {
+  if (!state || typeof state !== "object") return state;
+  if (isReduxUndoState(state)) {
+    return removeHistoryFromObject(state);
+  }
+  let newState = null;
+  Object.entries(state).forEach(([key, store]) => {
+    if (isReduxUndoState(store)) {
+      if (!newState) newState = Object.assign({}, state);
+      newState[key] = removeHistoryFromObject(store);
+    }
+  });
+  return newState || state;
+};
+
 function createRavenMiddleware(Raven, options = {}) {
   // TODO: Validate options.
   const {
     breadcrumbDataFromAction = getUndefined,
     actionTransformer = identity,
-    stateTransformer = identity,
+    stateTransformer = removeReduxUndoHistoryFromState,
     breadcrumbCategory = "redux-action",
     filterBreadcrumbActions = filter,
     getUserContext,
