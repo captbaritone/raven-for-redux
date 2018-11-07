@@ -85,9 +85,9 @@ optional keys.
 
 Default: `action => action.type`
 
-`breadcrumbMessageFromAction` allows you to specify a transform function which is passed the `action` object and returns a `string` that describes a message of breadcrumb. Which will be logged to Sentry.
+`breadcrumbMessageFromAction` allows you to specify a transform function which is passed the `action` object and returns a `string` that will be used as the message of the breadcrumb.
 
-By default, `breadcrumbMessageFromAction` will log `action.type` as a `message` of breadcrumb, but you can specify another value.
+By default `breadcrumbMessageFromAction` returns `action.type`.
 
 Finally, be careful not to mutate your `action` within this function.
 
