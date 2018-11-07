@@ -200,6 +200,9 @@ describe("raven-for-redux", () => {
       context.breadcrumbDataFromAction = jest.fn(action => ({
         extra: action.extra
       }));
+      context.breadcrumbMessageFromAction = jest.fn(
+        action => `transformed action ${action.type}`
+      );
       context.filterBreadcrumbActions = action => {
         return action.type !== "UNINTERESTING_ACTION";
       };
@@ -211,6 +214,7 @@ describe("raven-for-redux", () => {
             stateTransformer: context.stateTransformer,
             actionTransformer: context.actionTransformer,
             breadcrumbDataFromAction: context.breadcrumbDataFromAction,
+            breadcrumbMessageFromAction: context.breadcrumbMessageFromAction,
             filterBreadcrumbActions: context.filterBreadcrumbActions,
             getUserContext: context.getUserContext,
             getTags: context.getTags
@@ -252,7 +256,11 @@ describe("raven-for-redux", () => {
       expect(context.mockTransport).toHaveBeenCalledTimes(1);
       const { breadcrumbs } = context.mockTransport.mock.calls[0][0].data;
       expect(breadcrumbs.values.length).toBe(2);
+      expect(breadcrumbs.values[0].message).toBe(
+        "transformed action INCREMENT"
+      );
       expect(breadcrumbs.values[0].data).toMatchObject({ extra: "FOO" });
+      expect(breadcrumbs.values[1].message).toBe("transformed action THROW");
       expect(breadcrumbs.values[1].data).toMatchObject({ extra: "BAR" });
     });
     it("transforms the user context on data callback", () => {

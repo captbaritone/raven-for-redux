@@ -81,6 +81,18 @@ While the default configuration should work for most use cases, Raven for Redux
 can be configured by providing an options object with any of the following
 optional keys.
 
+#### `breadcrumbMessageFromAction` _(Function)_
+
+Default: `action => action.type`
+
+`breadcrumbMessageFromAction` allows you to specify a transform function which is passed the `action` object and returns a `string` that describes a message of breadcrumb. Which will be logged to Sentry.
+
+By default, `breadcrumbMessageFromAction` will log `action.type` as a `message` of breadcrumb, but you can specify another value.
+
+Finally, be careful not to mutate your `action` within this function.
+
+See the Sentry [Breadcrumb documentation].
+
 #### `breadcrumbDataFromAction` _(Function)_
 
 Default: `action => undefined`
