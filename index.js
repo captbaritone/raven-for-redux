@@ -1,10 +1,12 @@
 const identity = x => x;
 const getUndefined = () => {};
+const getType = action => action.type;
 const filter = () => true;
 function createRavenMiddleware(Raven, options = {}) {
   // TODO: Validate options.
   const {
     breadcrumbDataFromAction = getUndefined,
+    breadcrumbMessageFromAction = getType,
     actionTransformer = identity,
     stateTransformer = identity,
     breadcrumbCategory = "redux-action",
@@ -38,7 +40,7 @@ function createRavenMiddleware(Raven, options = {}) {
       if (filterBreadcrumbActions(action)) {
         Raven.captureBreadcrumb({
           category: breadcrumbCategory,
-          message: action.type,
+          message: breadcrumbMessageFromAction(action),
           data: breadcrumbDataFromAction(action)
         });
       }
