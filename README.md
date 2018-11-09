@@ -196,6 +196,10 @@ This option was introduced in version 1.3.1.
 
 ## Changelog
 
+### 1.4.0
+
+* Add `breadcrumbMessageFromAction` method. ([#98])
+
 ### 1.3.1
 
 * Add `getTags` option. ([#69])
@@ -243,3 +247,4 @@ This option was introduced in version 1.3.1.
 [#49]: https://github.com/captbaritone/raven-for-redux/pull/49
 [#59]: https://github.com/captbaritone/raven-for-redux/pull/59
 [#69]: https://github.com/captbaritone/raven-for-redux/pull/69
+[#98]: https://github.com/captbaritone/raven-for-redux/pull/98
