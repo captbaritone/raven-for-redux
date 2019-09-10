@@ -44,7 +44,7 @@
     "babel-preset-react": "^6.24.1",
     "eslint": "^4.1.0",
     "eslint-config-hss": "^6.0.0",
-    "eslint-config-prettier": "^2.0.0",
+    "eslint-config-prettier": "^6.3.0",
     "eslint-plugin-prettier": "^2.0.1",
     "eslint-plugin-react": "^7.0.1",
     "jest": "^23.5.0",
