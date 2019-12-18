@@ -1,40 +1,43 @@
- [![Travis](https://img.shields.io/travis/captbaritone/raven-for-redux.svg)]() [![Codecov](https://img.shields.io/codecov/c/github/captbaritone/raven-for-redux.svg)]()
+ [![Travis](https://img.shields.io/travis/captbaritone/sentryn-for-redux.svg)]() [![Codecov](https://img.shields.io/codecov/c/github/captbaritone/sentryn-for-redux.svg)]()
 
- _Note:_ Requires Raven >= 3.9.0. Raven 3.14.0 has [a bug](https://github.com/getsentry/raven-js/issues/925)
- which this library triggers.
+__This package used to be called `raven-for-redux` and work with the Raven package. As of version 2.0 it requires the Sentry JavaScript SDK instead.__
 
-# Raven Middleware for Redux
+# Sentry Middleware for Redux
 
-Logs the type of each dispatched action to Raven as "breadcrumbs" and attaches
-your last action and current Redux state as additional context.
+Logs the type of each dispatched action to Sentry as "breadcrumbs" and attaches
+your last action and current Redux state as additional context. It works with either
+`@sentry/browser` and `@sentry/node` (theoretically it should work with
+`@sentry/react-native` but that is untested).
 
-Inspired by [redux-raven-middleware] but with a slightly [different approach](#improvements).
+Inspired by [redux-raven-middleware] but with a slightly different approach.
 
 ## Installation
 
-    npm install --save raven-for-redux
+    npm install --save sentry-for-redux
+    # ... or
+    yarn add sentry-for-redux
 
 ## Usage
 
-### Browser
+### Browser/Node
 
 ```JavaScript
 // store.js
 
-import Raven from "raven-js"; // Or, you might already have this as `window.Raven`.
+import * as Sentry from "@sentry/browser"; // Or "@sentry/node"
 import { createStore, applyMiddleware } from "redux";
-import createRavenMiddleware from "raven-for-redux";
+import createSentryMiddleware from "sentryn-for-redux";
 
 import { reducer } from "./my_reducer";
 
-Raven.config("<YOUR_DSN>").install();
+Sentry.init({dsn: "<YOUR_DSN>"});
 
 export default createStore(
     reducer,
     applyMiddleware(
         // Middlewares, like `redux-thunk` that intercept or emit actions should
-        // precede `raven-for-redux`.
-        createRavenMiddleware(Raven, {
+        // precede `sentryn-for-redux`.
+        createSentryMiddleware(Sentry, {
             // Optionally pass some options here.
         })
     )
@@ -44,40 +47,19 @@ export default createStore(
 For a working example, see the [example](./example/) directory.
 
 ### TypeScript
-`raven-for-redux` has TypeScript bindings available through [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/b7ca35ab023ba1758de9e07004adde71e911c28e/types/raven-for-redux/index.d.ts). Please note the import style below, as it differs from the JavaScript example and is required for these typings.
-```TypeScript
-import * as Raven from "raven-js";
-import * as createRavenMiddleware from "raven-for-redux";
-import { applyMiddleware, createStore } from "redux";
+`sentry-for-redux` does not yet have TypeScript types. If you can help add them I'd be greatful for the help.
 
-//... (same as JavaScript example, but now with proper typings)
-```
-
-## Improvements
-
-This library makes, what I think are, a few improvements over
-`redux-raven-middlware`:
-
-1. Raven is injected rather than being setup inside the middleware. This allows
-   for more advanced configuration of Raven, as well as cases where Raven has
-   already been initialized. For example, if you include Raven as its own
-   `<script>` tag.
-2. Adds your state and last action as context to _all_ errors, not just reducer
-   exceptions.
-3. Allows filtering action breadcrumbs before sending to Sentry
-4. Allows you to define a user context mapping from the state
-
-## API: `createRavenMiddleware(Raven, [options])`
+## API: `createSentryMiddleware(Sentry, [options])`
 
 ### Arguments
 
-* `Raven` _(Raven Object)_: A configured and "installed"
-  [Raven] object.
+* `Sentry` _(Sentry Object)_: A configured and "installed"
+  [Sentry] object.
 * [`options`] _(Object)_: See below for detailed documentation.
 
 ### Options
 
-While the default configuration should work for most use cases, Raven for Redux
+While the default configuration should work for most use cases, Sentry for Redux
 can be configured by providing an options object with any of the following
 optional keys.
 
@@ -95,9 +77,7 @@ See the Sentry [Breadcrumb documentation].
 
 #### `breadcrumbDataFromAction` _(Function)_
 
-Default: `action => undefined`
-
-Raven allows you to attach additional context information to each breadcrumb
+Sentry allows you to attach additional context information to each breadcrumb
 in the form of a `data` object. `breadcrumbDataFromAction` allows you to specify
 a transform function which is passed the `action` object and returns a `data`
 object. Which will be logged to Sentry along with the breadcrumb.
@@ -105,8 +85,7 @@ object. Which will be logged to Sentry along with the breadcrumb.
 _Ideally_ we could log the entire content of each action. If we could, we
 could perfectly replay the user's entire session to see what went wrong.
 
-However, the default implementation of this function returns `undefined`, which means
-no data is attached. This is because there are __a few gotchas__:
+If this option is omitted, no data is attached. This is because there are __a few gotchas__:
 
 * The data object must be "flat". In other words, each value of the object must be a string. The values may not be arrays or other objects.
 * Sentry limits the total size of your error report. If you send too much data,
@@ -129,9 +108,6 @@ Sentry. This function allows you to do so. It is passed the last dispatched
 
 Be careful not to mutate your `action` within this function.
 
-If you have specified a [`dataCallback`] when you configured Raven, note that
-`actionTransformer` will be applied _before_ your specified `dataCallback`.
-
 #### `stateTransformer` _(Function)_
 
 Default: `state => state`
@@ -142,9 +118,6 @@ Sentry. This function allows you to do so. It is passed the current state
 object, and should return a serializable value.
 
 Be careful not to mutate your `state` within this function.
-
-If you have specified a [`dataCallback`] when you configured Raven, note that
-`stateTransformer` will be applied _before_ your specified `dataCallback`.
 
 #### `breadcrumbCategory` _(String)_
 
@@ -170,16 +143,11 @@ This option was introduced in version 1.1.1.
 
 Signature: `state => userContext`
 
-Raven allows you to associcate a [user context] with each error report.
+Sentry allows you to associcate a [user context] with each error report.
 `getUserContext` allows you to define a mapping from your Redux `state` to
 the user context. When `getUserContext` is specified, the result of
 `getUserContext` will be used to derive the user context before sending an
 error report. Be careful not to mutate your `state` within this function.
-
-If you have specified a [`dataCallback`] when you configured Raven, note that
-`getUserContext` will be applied _before_ your specified `dataCallback`.
-When a `getUserContext` function is given, it will override any previously
-set user context.
 
 This option was introduced in version 1.2.0.
 
@@ -187,7 +155,7 @@ This option was introduced in version 1.2.0.
 
 Signature: `state => tags`
 
-Raven allows you to associate [tags] with each report.
+Sentry allows you to associate [tags] with each report.
 `getTags` allows you to define a mapping from your Redux `state` to
 an object of tags (key → value). Be careful not to mutate your `state`
 within this function.
@@ -195,6 +163,18 @@ within this function.
 This option was introduced in version 1.3.1.
 
 ## Changelog
+
+### 2.0
+
+For version 2.0 we forked the library `raven-for-redux` and moved from being
+a library for Raven to being a library for the new Sentry SDK. In order to
+preserve the history created in the `raven-for-redux` library, we're starting
+`sentry-for-redux` at version 2.0. All previous versions listed below were
+released as `raven-for-redux`. The old module still exists if you are using
+Raven.
+
+The fork uses the exact same API as `raven-for-redux` except that you pass a `Sentry` object
+instead of a `Raven` object.
 
 ### 1.4.0
 
@@ -234,11 +214,10 @@ This option was introduced in version 1.3.1.
 
 
 [redux-raven-middleware]: https://github.com/ngokevin/redux-raven-middleware
-[Raven]: https://docs.sentry.io/clients/javascript/
+[Sentry]: https://docs.sentry.io/platforms/javascript/
 [Raven Breadcrumbs]: https://docs.sentry.io/clients/javascript/usage/#recording-breadcrumbs
 [Breadcrumb documentation]: https://docs.sentry.io/learn/breadcrumbs/
 [user context]: https://docs.sentry.io/learn/context/#capturing-the-user
-[`dataCallback`]: https://docs.sentry.io/clients/javascript/config/
 [tags]: https://docs.sentry.io/learn/context/#tagging-events
 [#11]: https://github.com/captbaritone/raven-for-redux/pull/11
 [#8]: https://github.com/captbaritone/raven-for-redux/pull/8

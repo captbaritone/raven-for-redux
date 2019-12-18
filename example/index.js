@@ -1,11 +1,11 @@
-import Raven from "raven-js";
+import * as Sentry from "@sentry/browser";
 import React from "react";
 import { render } from "react-dom";
 import { createStore, applyMiddleware } from "redux";
-import createRavenMiddleware from "../"; // "raven-for-redux"
+import createSentryMiddleware from "../"; // "sentry-for-redux"
 
-const RAVEN_DSN = "https://5d5bf17b1bed4afc9103b5a09634775e@sentry.io/146969";
-Raven.config(RAVEN_DSN).install();
+const SENTRY_DSN = "https://5d5bf17b1bed4afc9103b5a09634775e@sentry.io/146969";
+Sentry.init({ dsn: SENTRY_DSN });
 
 // A very error-prone reducer.
 const reducer = (state = "Hello world!", action) => {
@@ -22,7 +22,7 @@ const reducer = (state = "Hello world!", action) => {
 const store = createStore(
   reducer,
   applyMiddleware(
-    createRavenMiddleware(Raven, {
+    createSentryMiddleware(Sentry, {
       breadcrumbDataFromAction: action => {
         return { STRING: action.str };
       }

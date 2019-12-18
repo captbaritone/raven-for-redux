@@ -1,9 +1,7 @@
 before_script:
-  - 'if [ "$RAVEN_VERSION" ]; then npm install raven-js@$RAVEN_VERSION; fi'
+  - 'if [ "$SENTRY_VERSION" ]; then npm install @sentry/browser@$SENTRY_VERSION; fi'
 env:
-  - RAVEN_VERSION="latest"
-  - RAVEN_VERSION="^3.0.0"
-  - RAVEN_VERSION="~3.9.0"
+  - SENTRY_VERSION="latest"
 language: node_js
 node_js:
   - "node"
