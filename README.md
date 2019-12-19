@@ -1,9 +1,16 @@
  [![Travis](https://img.shields.io/travis/captbaritone/raven-for-redux.svg)]() [![Codecov](https://img.shields.io/codecov/c/github/captbaritone/raven-for-redux.svg)]()
+.
 
- _Note:_ Requires Raven >= 3.9.0. Raven 3.14.0 has [a bug](https://github.com/getsentry/raven-js/issues/925)
- which this library triggers.
+# Deprecated
+
+Sentry now recommends using their new SDK `@sentry/browser` rather than Raven. Check out [redux-sentry-middleware](https://github.com/vidit-sh/redux-sentry-middleware) for an API compatible fork of this library that supports the new SDK!
+
 
 # Raven Middleware for Redux
+
+_Note:_ Requires Raven >= 3.9.0. Raven 3.14.0 has [a bug](https://github.com/getsentry/raven-js/issues/925)
+ which this library triggers
+
 
 Logs the type of each dispatched action to Raven as "breadcrumbs" and attaches
 your last action and current Redux state as additional context.
