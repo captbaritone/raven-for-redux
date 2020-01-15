@@ -1,3 +1,5 @@
+const stringify = require("./vendor/json-stringify-safe/stringify");
+
 const identity = x => x;
 const getUndefined = () => {};
 const getType = action => action.type;
@@ -33,6 +35,63 @@ function createRavenMiddleware(Raven, options = {}) {
       }
       return original ? original(data) : data;
     });
+
+    const retryCaptureWithoutReduxState = (errorMessage, captureFn) => {
+      Raven.setDataCallback((data, originalCallback) => {
+        Raven.setDataCallback(originalCallback);
+        const reduxExtra = {
+          lastAction: actionTransformer(lastAction),
+          state: errorMessage
+        };
+        data.extra = Object.assign(reduxExtra, data.extra);
+        data.breadcrumbs.values = [];
+        return data;
+      });
+      // Raven has an internal check for duplicate errors that we need to disable.
+      const originalAllowDuplicates = Raven._globalOptions.allowDuplicates;
+      Raven._globalOptions.allowDuplicates = true;
+      captureFn();
+      Raven._globalOptions.allowDuplicates = originalAllowDuplicates;
+    };
+
+    const retryWithoutStateIfRequestTooLarge = originalFn => {
+      return (...captureArguments) => {
+        const originalTransport = Raven._globalOptions.transport;
+        Raven.setTransport(opts => {
+          Raven.setTransport(originalTransport);
+          const requestBody = stringify(opts.data);
+          if (requestBody.length > 200000) {
+            // We know the request is too large, so don't try sending it to Sentry.
+            // Retry the capture function, and don't include the state this time.
+            const errorMessage =
+              "Could not send state because request would be larger than 200KB. " +
+              `(Was: ${requestBody.length}B)`;
+            retryCaptureWithoutReduxState(errorMessage, () => {
+              originalFn.apply(Raven, captureArguments);
+            });
+            return;
+          }
+          opts.onError = error => {
+            if (error.request && error.request.status === 413) {
+              const errorMessage =
+                "Failed to submit state to Sentry: 413 request too large.";
+              retryCaptureWithoutReduxState(errorMessage, () => {
+                originalFn.apply(Raven, captureArguments);
+              });
+            }
+          };
+          (originalTransport || Raven._makeRequest).call(Raven, opts);
+        });
+        originalFn.apply(Raven, captureArguments);
+      };
+    };
+
+    Raven.captureException = retryWithoutStateIfRequestTooLarge(
+      Raven.captureException
+    );
+    Raven.captureMessage = retryWithoutStateIfRequestTooLarge(
+      Raven.captureMessage
+    );
 
     return next => action => {
       // Log the action taken to Raven so that we have narrative context in our
